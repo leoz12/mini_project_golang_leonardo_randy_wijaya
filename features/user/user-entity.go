@@ -1,14 +1,19 @@
 package user
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type UserCore struct {
-	ID        string
+	ID        string `gorm:"primaryKey"`
 	Name      string
 	Email     string
 	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeleteAt  gorm.DeletedAt
 }
 
 type LoginCore struct {
