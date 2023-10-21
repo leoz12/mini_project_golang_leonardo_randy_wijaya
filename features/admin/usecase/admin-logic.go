@@ -3,15 +3,15 @@ package usecase
 import (
 	"errors"
 	"mini_project/app/middlewares"
-	"mini_project/features/user"
+	"mini_project/features/admin"
 	"mini_project/utils/helpers"
 )
 
-type userUsecase struct {
-	userRepository user.DataInterface
+type adminUseCase struct {
+	adminRepository admin.DataInterface
 }
 
-func (uc *userUsecase) Create(data user.UserCore) error {
+func (uc *adminUseCase) Create(data admin.AdminCore) error {
 	if data.Email == "" || data.Password == "" {
 		return errors.New("[validation] error. email dan password harus diisi")
 	}
@@ -24,24 +24,24 @@ func (uc *userUsecase) Create(data user.UserCore) error {
 		return errors.New(errHash.Error())
 	}
 
-	err := uc.userRepository.Insert(data)
+	err := uc.adminRepository.Insert(data)
 	return err
 }
 
-func (uc *userUsecase) Login(data user.LoginCore) (string, error) {
+func (uc *adminUseCase) Login(data admin.LoginCore) (string, error) {
 
 	if data.Email == "" || data.Password == "" {
 		return "", errors.New("[validation] error. email dan password harus diisi")
 	}
 
-	dataUser, err := uc.userRepository.CheckByEmail(data.Email)
+	dataUser, err := uc.adminRepository.CheckByEmail(data.Email)
 
 	if err != nil {
 		return "", err
 	}
 
 	if helpers.CheckPasswordHash(dataUser.Password, data.Password) {
-		token, errToken := middlewares.CreateToken(dataUser.ID, "user")
+		token, errToken := middlewares.CreateToken(dataUser.ID, "admin")
 
 		if errToken != nil {
 			return "", errToken
@@ -52,8 +52,8 @@ func (uc *userUsecase) Login(data user.LoginCore) (string, error) {
 	}
 }
 
-func UserUseCase(userRepo user.DataInterface) user.UseCaseInterface {
-	return &userUsecase{
-		userRepository: userRepo,
+func AdminUseCase(adminRepo admin.DataInterface) admin.UseCaseInterface {
+	return &adminUseCase{
+		adminRepository: adminRepo,
 	}
 }
