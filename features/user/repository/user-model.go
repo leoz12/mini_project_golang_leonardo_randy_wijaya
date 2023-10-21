@@ -8,10 +8,10 @@ import (
 
 type User struct {
 	ID        string `gorm:"primarykey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Name      string
 	Email     string `gorm:"unique"`
 	Password  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

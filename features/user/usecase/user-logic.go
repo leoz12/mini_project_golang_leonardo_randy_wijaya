@@ -11,9 +11,7 @@ type userUsecase struct {
 	userRepository user.DataInterface
 }
 
-// Create implements user.UseCaseInterface.
 func (uc *userUsecase) Create(data user.UserCore) error {
-	//validasi
 	if data.Email == "" || data.Password == "" {
 		return errors.New("[validation] error. email dan password harus diisi")
 	}

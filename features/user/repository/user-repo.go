@@ -11,9 +11,7 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-// Insert implements user.DataInterface.
 func (repo *userRepository) Insert(data user.UserCore) error {
-	//mapping dari struct core ke struct gorm/model
 	var input = User{
 		ID:       uuid.New().String(),
 		Name:     data.Name,
@@ -35,6 +33,7 @@ func (repo *userRepository) CheckByEmail(email string) (*user.UserCore, error) {
 	if tx.Error != nil {
 		return &user.UserCore{}, tx.Error
 	}
+
 	return &user.UserCore{
 		ID:        data.ID,
 		Name:      data.Name,

@@ -1,12 +1,14 @@
 package migration
 
 import (
-	"mini_project/features/user/repository"
+	adminRepository "mini_project/features/admin/repository"
+	userRepository "mini_project/features/user/repository"
 
 	"gorm.io/gorm"
 )
 
 func InitMigrationMysql(db *gorm.DB) {
-	db.AutoMigrate(&repository.User{})
+	db.AutoMigrate(&userRepository.User{})
+	db.AutoMigrate(&adminRepository.Admin{})
 	// auto migrate untuk table book
 }
