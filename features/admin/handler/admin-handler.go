@@ -1,4 +1,4 @@
-package handler
+package adminHandler
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ type AdminController struct {
 	adminUseCase admin.UseCaseInterface
 }
 
-func AdminHandler(userUC admin.UseCaseInterface) *AdminController {
+func New(userUC admin.UseCaseInterface) *AdminController {
 	return &AdminController{
 		adminUseCase: userUC,
 	}

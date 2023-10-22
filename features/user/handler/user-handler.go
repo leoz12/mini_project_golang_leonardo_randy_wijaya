@@ -1,4 +1,4 @@
-package handler
+package userHandler
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ type UserController struct {
 	userUsecase user.UseCaseInterface
 }
 
-func UserHandler(userUC user.UseCaseInterface) *UserController {
+func New(userUC user.UseCaseInterface) *UserController {
 	return &UserController{
 		userUsecase: userUC,
 	}
@@ -37,7 +37,7 @@ func (handler *UserController) CreateUser(c echo.Context) error {
 	}
 	var mysqlErr *mysql.MySQLError
 
-	err := handler.userUsecase.Create(data)
+	err := handler.userUsecase.Register(data)
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{

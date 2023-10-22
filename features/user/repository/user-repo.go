@@ -1,4 +1,4 @@
-package repository
+package userRepository
 
 import (
 	"mini_project/features/user"
@@ -43,7 +43,7 @@ func (repo *userRepository) CheckByEmail(email string) (*user.UserCore, error) {
 	}, nil
 }
 
-func UserDB(db *gorm.DB) user.DataInterface {
+func New(db *gorm.DB) user.DataInterface {
 	return &userRepository{
 		db: db,
 	}

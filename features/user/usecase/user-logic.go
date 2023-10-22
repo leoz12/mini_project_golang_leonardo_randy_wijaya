@@ -1,4 +1,4 @@
-package usecase
+package userUsecase
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ type userUsecase struct {
 	userRepository user.DataInterface
 }
 
-func (uc *userUsecase) Create(data user.UserCore) error {
+func (uc *userUsecase) Register(data user.UserCore) error {
 	if data.Email == "" || data.Password == "" {
 		return errors.New("[validation] error. email dan password harus diisi")
 	}
@@ -52,7 +52,7 @@ func (uc *userUsecase) Login(data user.LoginCore) (string, error) {
 	}
 }
 
-func UserUseCase(userRepo user.DataInterface) user.UseCaseInterface {
+func New(userRepo user.DataInterface) user.UseCaseInterface {
 	return &userUsecase{
 		userRepository: userRepo,
 	}

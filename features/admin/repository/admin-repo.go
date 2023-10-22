@@ -1,4 +1,4 @@
-package repository
+package adminRepository
 
 import (
 	"errors"
@@ -45,7 +45,7 @@ func (repo *adminRepository) CheckByEmail(email string) (*admin.AdminCore, error
 	}, nil
 }
 
-func AdminDB(db *gorm.DB) admin.DataInterface {
+func New(db *gorm.DB) admin.DataInterface {
 	return &adminRepository{
 		db: db,
 	}

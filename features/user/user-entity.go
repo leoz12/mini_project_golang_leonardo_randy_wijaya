@@ -7,7 +7,7 @@ import (
 )
 
 type UserCore struct {
-	ID        string `gorm:"primaryKey"`
+	ID        string
 	Name      string
 	Email     string
 	Password  string
@@ -27,6 +27,6 @@ type DataInterface interface {
 }
 
 type UseCaseInterface interface {
-	Create(data UserCore) error
+	Register(data UserCore) error
 	Login(data LoginCore) (string, error)
 }
