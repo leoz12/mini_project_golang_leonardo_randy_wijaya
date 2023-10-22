@@ -11,17 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type AdminController struct {
+type adminController struct {
 	adminUseCase admin.UseCaseInterface
 }
 
-func New(userUC admin.UseCaseInterface) *AdminController {
-	return &AdminController{
+func New(userUC admin.UseCaseInterface) *adminController {
+	return &adminController{
 		adminUseCase: userUC,
 	}
 }
 
-func (handler *AdminController) CreateUser(c echo.Context) error {
+func (handler *adminController) CreateUser(c echo.Context) error {
 	input := new(AdminRegisterRequest)
 	errBind := c.Bind(&input)
 	if errBind != nil {
@@ -58,7 +58,7 @@ func (handler *AdminController) CreateUser(c echo.Context) error {
 	})
 }
 
-func (handler *AdminController) UserLogin(c echo.Context) error {
+func (handler *adminController) UserLogin(c echo.Context) error {
 	input := new(AdminLoginRequest)
 	errBind := c.Bind(&input)
 	if errBind != nil {

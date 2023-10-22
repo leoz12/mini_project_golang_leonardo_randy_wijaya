@@ -2,8 +2,6 @@ package user
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type UserCore struct {
@@ -13,7 +11,6 @@ type UserCore struct {
 	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeleteAt  gorm.DeletedAt
 }
 
 type LoginCore struct {
