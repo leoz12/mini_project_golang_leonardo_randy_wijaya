@@ -1,4 +1,4 @@
-package handler
+package adminHandler
 
 type AdminRegisterRequest struct {
 	Email    string `json:"email" form:"email"`

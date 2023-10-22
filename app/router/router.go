@@ -2,25 +2,25 @@ package router
 
 import (
 	userHandler "mini_project/features/user/handler"
-	userRepo "mini_project/features/user/repository"
-	userCase "mini_project/features/user/usecase"
+	userRepository "mini_project/features/user/repository"
+	userUsecase "mini_project/features/user/usecase"
 
 	adminHandler "mini_project/features/admin/handler"
-	adminRepo "mini_project/features/admin/repository"
-	adminCase "mini_project/features/admin/usecase"
+	adminRepository "mini_project/features/admin/repository"
+	adminUsecase "mini_project/features/admin/usecase"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 func InitRouter(db *gorm.DB, e *echo.Echo) {
-	userRepository := userRepo.UserDB(db)
-	userUsecase := userCase.UserUseCase(userRepository)
-	userController := userHandler.UserHandler(userUsecase)
+	userRepository := userRepository.New(db)
+	userUsecase := userUsecase.New(userRepository)
+	userController := userHandler.New(userUsecase)
 
-	adminRepository := adminRepo.AdminDB(db)
-	adminUsecase := adminCase.AdminUseCase(adminRepository)
-	adminController := adminHandler.AdminHandler(adminUsecase)
+	adminRepository := adminRepository.New(db)
+	adminUsecase := adminUsecase.New(adminRepository)
+	adminController := adminHandler.New(adminUsecase)
 
 	user := e.Group("/user")
 	user.POST("/register", userController.CreateUser)

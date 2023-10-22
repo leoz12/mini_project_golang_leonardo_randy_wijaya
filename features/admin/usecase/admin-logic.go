@@ -1,4 +1,4 @@
-package usecase
+package adminUsecase
 
 import (
 	"errors"
@@ -52,7 +52,7 @@ func (uc *adminUseCase) Login(data admin.LoginCore) (string, error) {
 	}
 }
 
-func AdminUseCase(adminRepo admin.DataInterface) admin.UseCaseInterface {
+func New(adminRepo admin.DataInterface) admin.UseCaseInterface {
 	return &adminUseCase{
 		adminRepository: adminRepo,
 	}

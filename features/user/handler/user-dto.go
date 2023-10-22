@@ -1,4 +1,4 @@
-package handler
+package userHandler
 
 type UserRegisterRequest struct {
 	Name     string `json:"name" form:"name"`
