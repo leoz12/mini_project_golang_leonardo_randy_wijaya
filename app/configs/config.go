@@ -17,6 +17,10 @@ type AppConfig struct {
 	DBNAME     string
 }
 
+var (
+	SECRET_JWT = ""
+)
+
 func InitConfig() *AppConfig {
 	var res = new(AppConfig)
 	res = loadConfig()
@@ -55,6 +59,10 @@ func loadConfig() *AppConfig {
 			return nil
 		}
 		res.DBPORT = port
+	}
+
+	if val, found := os.LookupEnv("SECRETJWT"); found {
+		SECRET_JWT = val
 	}
 
 	if val, found := os.LookupEnv("DBHOST"); found {

@@ -1,49 +1,50 @@
 package middlewares
 
 import (
-	"os"
+	"mini_project/app/configs"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
-func JWTMiddleware() echo.MiddlewareFunc {
-	val, exist := os.LookupEnv("SECRETJWT")
+type TokenData struct {
+	Id   string
+	Role string
+}
 
-	if !exist {
-		logrus.Error("missing secret jwt")
-	}
+func JWTMiddleware() echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
-		SigningKey:    []byte(val),
+		SigningKey:    []byte(configs.SECRET_JWT),
 		SigningMethod: "HS256",
 	})
 }
 
 func CreateToken(userId string, role string) (string, error) {
-	val, exist := os.LookupEnv("SECRETJWT")
-
-	if !exist {
-		logrus.Error("missing secret jwt")
-	}
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["userId"] = userId
 	claims["role"] = role
-	claims["exp"] = time.Now().Add(time.Hour * 1).Unix() //Token expires after 1 hour
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() //Token expires after 1 hour
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(val))
+	return token.SignedString([]byte(configs.SECRET_JWT))
 
 }
 
-func ExtractTokenUserId(e echo.Context) int {
+func ExtractToken(e echo.Context) TokenData {
 	user := e.Get("user").(*jwt.Token)
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
-		userId := claims["userId"].(float64)
-		return int(userId)
+		userId := claims["userId"].(string)
+		role := claims["role"].(string)
+		return TokenData{
+			Id:   userId,
+			Role: role,
+		}
 	}
-	return 0
+	return TokenData{
+		Id:   "",
+		Role: "",
+	}
 }
