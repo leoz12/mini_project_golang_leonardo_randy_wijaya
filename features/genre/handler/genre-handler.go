@@ -1,6 +1,7 @@
 package genreHandler
 
 import (
+	"mini_project/app/middlewares"
 	"mini_project/features/genre"
 	"mini_project/utils/helpers"
 	"net/http"
@@ -21,6 +22,12 @@ func New(genreUC genre.UseCaseInterface) *genreController {
 
 func (handler *genreController) GetAllGenre(c echo.Context) error {
 
+	tokenData := middlewares.ExtractToken(c)
+
+	if tokenData.Id == "" {
+		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
+	}
+
 	resp, err := handler.genreUsecase.GetAll()
 
 	if err != nil {
@@ -40,7 +47,13 @@ func (handler *genreController) GetAllGenre(c echo.Context) error {
 }
 
 func (handler *genreController) CreateGenre(c echo.Context) error {
-	input := new(GenreCreateRequest)
+	tokenData := middlewares.ExtractToken(c)
+
+	if tokenData.Role != "admin" {
+		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
+	}
+
+	input := new(CreateRequest)
 	errBind := c.Bind(&input)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -58,15 +71,22 @@ func (handler *genreController) CreateGenre(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create genre", GenreDataResponse{
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create data", GenreDataResponse{
 		Id:        resp.ID,
 		Name:      resp.Name,
 		CreatedAt: resp.CreatedAt,
 		UpdatedAt: resp.UpdatedAt,
 	}))
 }
+
 func (handler *genreController) UpdateGenre(c echo.Context) error {
-	input := new(GenreCreateRequest)
+	tokenData := middlewares.ExtractToken(c)
+
+	if tokenData.Role != "admin" {
+		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
+	}
+
+	input := new(CreateRequest)
 	errBind := c.Bind(&input)
 	id := c.Param("id")
 
@@ -86,10 +106,16 @@ func (handler *genreController) UpdateGenre(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update genre"))
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
 }
 
 func (handler *genreController) DeleteGenre(c echo.Context) error {
+	tokenData := middlewares.ExtractToken(c)
+
+	if tokenData.Role != "admin" {
+		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
+	}
+
 	id := c.Param("id")
 
 	err := handler.genreUsecase.Delete(id)
