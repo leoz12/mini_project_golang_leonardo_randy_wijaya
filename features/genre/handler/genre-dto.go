@@ -2,11 +2,11 @@ package genreHandler
 
 import "time"
 
-type GenreCreateRequest struct {
+type CreateRequest struct {
 	Name string `json:"name" form:"name"`
 }
 
-type GenreUpdateRequest struct {
+type UpdateRequest struct {
 	Name string `json:"name" form:"name"`
 }
 
