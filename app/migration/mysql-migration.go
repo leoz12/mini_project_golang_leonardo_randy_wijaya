@@ -2,6 +2,7 @@ package migration
 
 import (
 	adminRepository "mini_project/features/admin/repository"
+	gameRepository "mini_project/features/game/repository"
 	genreRepository "mini_project/features/genre/repository"
 	userRepository "mini_project/features/user/repository"
 
@@ -9,8 +10,5 @@ import (
 )
 
 func InitMigrationMysql(db *gorm.DB) {
-	db.AutoMigrate(&userRepository.User{})
-	db.AutoMigrate(&adminRepository.Admin{})
-	db.AutoMigrate(&genreRepository.Genre{})
-	// auto migrate untuk table book
+	db.AutoMigrate(&userRepository.User{}, &adminRepository.Admin{}, &genreRepository.Genre{}, &gameRepository.Game{})
 }
