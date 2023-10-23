@@ -1,6 +1,7 @@
 package router
 
 import (
+	"mini_project/app/middlewares"
 	genreHandler "mini_project/features/genre/handler"
 	genreRepository "mini_project/features/genre/repository"
 	genreUseCase "mini_project/features/genre/usecase"
@@ -11,6 +12,10 @@ import (
 	adminHandler "mini_project/features/admin/handler"
 	adminRepository "mini_project/features/admin/repository"
 	adminUsecase "mini_project/features/admin/usecase"
+
+	gameHandler "mini_project/features/game/handler"
+	gameRepository "mini_project/features/game/repository"
+	gameUseCase "mini_project/features/game/usecase"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -29,6 +34,10 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	genreUsecase := genreUseCase.New(genreRepository)
 	genreController := genreHandler.New(genreUsecase)
 
+	gameRepository := gameRepository.New(db)
+	gameUsecase := gameUseCase.New(gameRepository)
+	gameController := gameHandler.New(gameUsecase)
+
 	user := e.Group("/user")
 	user.POST("/register", userController.CreateUser)
 	user.POST("/login", userController.UserLogin)
@@ -37,9 +46,16 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	admin.POST("/register", adminController.CreateUser)
 	admin.POST("/login", adminController.UserLogin)
 
-	genre := e.Group("/genre")
+	genre := e.Group("/genre", middlewares.JWTMiddleware())
 	genre.GET("", genreController.GetAllGenre)
 	genre.POST("", genreController.CreateGenre)
 	genre.PUT("/:id", genreController.UpdateGenre)
 	genre.DELETE("/:id", genreController.DeleteGenre)
+
+	game := e.Group("/game", middlewares.JWTMiddleware())
+	game.GET("", gameController.GetAllGame)
+	game.GET("/:id", gameController.GetById)
+	game.POST("", gameController.CreateGame)
+	game.PUT("/:id", gameController.UpdateGame)
+	game.DELETE("/:id", gameController.DeleteGame)
 }
