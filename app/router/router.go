@@ -17,6 +17,10 @@ import (
 	gameRepository "mini_project/features/game/repository"
 	gameUseCase "mini_project/features/game/usecase"
 
+	wishlistHandler "mini_project/features/wishlist/handler"
+	wishlistRepository "mini_project/features/wishlist/repository"
+	wishlistUseCase "mini_project/features/wishlist/usecase"
+
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -38,6 +42,10 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	gameUsecase := gameUseCase.New(gameRepository)
 	gameController := gameHandler.New(gameUsecase)
 
+	wishlistRepository := wishlistRepository.New(db)
+	wishlistUsecase := wishlistUseCase.New(wishlistRepository)
+	wishlistController := wishlistHandler.New(wishlistUsecase)
+
 	user := e.Group("/user")
 	user.POST("/register", userController.CreateUser)
 	user.POST("/login", userController.UserLogin)
@@ -58,4 +66,9 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	game.POST("", gameController.CreateGame)
 	game.PUT("/:id", gameController.UpdateGame)
 	game.DELETE("/:id", gameController.DeleteGame)
+
+	wishlists := e.Group("/wishlists", middlewares.JWTMiddleware())
+	wishlists.GET("", wishlistController.GetWishlists)
+	wishlists.POST("", wishlistController.CreateWishlist)
+	wishlists.DELETE("/:id", wishlistController.DeleteWishlist)
 }
