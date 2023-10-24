@@ -131,7 +131,7 @@ func (repo *gameRepository) Update(id string, data game.GameCore) error {
 
 // Delete implements game.DataInterface.
 func (repo *gameRepository) Delete(id string) error {
-	tx := repo.db.Where("id = ?", id).Delete(&Game{})
+	tx := repo.db.Unscoped().Where("id = ?", id).Delete(&Game{})
 
 	if tx.RowsAffected == 0 {
 		return errors.New("invalid id")
