@@ -17,17 +17,25 @@ type WishlistResponse struct {
 	UpdatedAt time.Time
 }
 
-func GetWishlistReponse(data wishlist.WishlistCore) WishlistResponse {
+func GetWishlistReponse(data wishlist.Core) WishlistResponse {
+	var genres []gameHandler.GameGenre
+
+	for _, val := range data.Game.Genres {
+		genres = append(genres, gameHandler.GameGenre{
+			Id:   val.Id,
+			Name: val.Name,
+		})
+	}
 	return WishlistResponse{
 		Id: data.Id,
 		Game: gameHandler.GameResponse{
-			Id:          data.Game.ID,
+			Id:          data.Game.Id,
 			Name:        data.Game.Name,
 			Description: data.Game.Description,
 			Price:       data.Game.Price,
 			Stock:       data.Game.Stock,
 			Discount:    data.Game.Discount,
-			Genre:       data.Game.Genre,
+			Genres:      genres,
 			Publisher:   data.Game.Publisher,
 			ReleaseDate: data.Game.ReleaseDate,
 			CreatedAt:   data.Game.CreatedAt,
