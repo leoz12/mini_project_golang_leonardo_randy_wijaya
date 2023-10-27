@@ -1,35 +1,42 @@
 package game
 
 import (
+	"mini_project/features/genre"
 	"time"
 )
 
-type GameCore struct {
-	ID          string
+type Core struct {
+	Id          string
 	Name        string
 	Description string
 	Price       float32
 	Stock       int
 	Discount    float32
-	Genre       string
+	Genres      []genre.Core
 	Publisher   string
+	ImageUrl    string
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
 
+type GameParams struct {
+	Genres string
+	Search string
+}
+
 type DataInterface interface {
-	SelectAll() ([]GameCore, error)
-	SelectById(id string) (*GameCore, error)
-	Insert(data GameCore) (*GameCore, error)
-	Update(id string, data GameCore) error
+	SelectAll(GameParams) ([]Core, error)
+	SelectById(id string) (Core, error)
+	Insert(data Core) (Core, error)
+	Update(id string, data Core) error
 	Delete(id string) error
 }
 
 type UseCaseInterface interface {
-	GetAll() ([]GameCore, error)
-	GetById(id string) (*GameCore, error)
-	Insert(data GameCore) (*GameCore, error)
-	Update(id string, data GameCore) error
+	GetAll(GameParams) ([]Core, error)
+	GetById(id string) (Core, error)
+	Insert(data Core) (Core, error)
+	Update(id string, data Core) error
 	Delete(id string) error
 }

@@ -6,14 +6,15 @@ import (
 )
 
 type CreateRequest struct {
-	Name        string  `json:"name" form:"name"`
-	Description string  `json:"description" form:"description"`
-	Price       float32 `json:"price" form:"price"`
-	Stock       int     `json:"stock" form:"stock"`
-	Discount    float32 `json:"discount" form:"discount"`
-	Genre       string  `json:"genre" form:"genre"`
-	Publisher   string  `json:"publisher" form:"publisher"`
-	ReleaseDate string  `json:"releaseDate" form:"releaseDate"`
+	Name        string   `json:"name" form:"name"`
+	Description string   `json:"description" form:"description"`
+	Price       float32  `json:"price" form:"price"`
+	Stock       int      `json:"stock" form:"stock"`
+	Discount    float32  `json:"discount" form:"discount"`
+	Genres      []string `json:"genres" form:"genres"`
+	Publisher   string   `json:"publisher" form:"publisher"`
+	ReleaseDate string   `json:"releaseDate" form:"releaseDate"`
+	ImageUrl    string   `json:"ImageUrl" form:"ImageUrl"`
 }
 
 type UpdateRequest struct {
@@ -22,18 +23,24 @@ type UpdateRequest struct {
 	Price       float32   `json:"price" form:"price"`
 	Stock       int       `json:"stock" form:"stock"`
 	Discount    float32   `json:"discount" form:"discount"`
-	Genre       string    `json:"genre" form:"genre"`
+	Genres      []string  `json:"genres" form:"genres"`
 	Publisher   string    `json:"publisher" form:"publisher"`
 	ReleaseDate time.Time `json:"releaseDate" form:"releaseDate"`
+	ImageUrl    string    `json:"ImageUrl" form:"ImageUrl"`
 }
 
+type GameGenre struct {
+	Id   string
+	Name string
+}
 type GameLiteResponse struct {
 	Id          string
 	Name        string
 	Description string
 	Price       float32
+	Stock       int
 	Discount    float32
-	Genre       string
+	Genres      []GameGenre
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -45,35 +52,84 @@ type GameResponse struct {
 	Price       float32
 	Stock       int
 	Discount    float32
-	Genre       string
+	ImageUrl    string
+	Genres      []GameGenre
 	Publisher   string
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
 
-func GetGameLiteResponse(data game.GameCore) GameLiteResponse {
-	return GameLiteResponse{
-		Id:          data.ID,
-		Name:        data.Name,
-		Description: data.Description,
-		Price:       data.Price,
-		Discount:    data.Discount,
-		Genre:       data.Genre,
-		CreatedAt:   data.CreatedAt,
-		UpdatedAt:   data.UpdatedAt,
-	}
+type CreateGameResponse struct {
+	Id          string
+	Name        string
+	Description string
+	Price       float32
+	Stock       int
+	Discount    float32
+	Publisher   string
+	ReleaseDate time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
-func GetGameResponse(data *game.GameCore) GameResponse {
-	return GameResponse{
-		Id:          data.ID,
+func CoreToLiteReponse(data game.Core) GameLiteResponse {
+	var gameGenres []GameGenre
+
+	for _, val := range data.Genres {
+		gameGenres = append(gameGenres, GameGenre{
+			Id:   val.Id,
+			Name: val.Name,
+		})
+	}
+
+	return GameLiteResponse{
+		Id:          data.Id,
 		Name:        data.Name,
 		Description: data.Description,
 		Price:       data.Price,
 		Stock:       data.Stock,
 		Discount:    data.Discount,
-		Genre:       data.Genre,
+		Genres:      gameGenres,
+		CreatedAt:   data.CreatedAt,
+		UpdatedAt:   data.UpdatedAt,
+	}
+}
+
+func CoreToReponse(data game.Core) GameResponse {
+	var gameGenres []GameGenre
+
+	for _, val := range data.Genres {
+		gameGenres = append(gameGenres, GameGenre{
+			Id:   val.Id,
+			Name: val.Name,
+		})
+	}
+
+	return GameResponse{
+		Id:          data.Id,
+		Name:        data.Name,
+		Description: data.Description,
+		Price:       data.Price,
+		Stock:       data.Stock,
+		Discount:    data.Discount,
+		Genres:      gameGenres,
+		ImageUrl:    data.ImageUrl,
+		Publisher:   data.Publisher,
+		ReleaseDate: data.ReleaseDate,
+		CreatedAt:   data.CreatedAt,
+		UpdatedAt:   data.UpdatedAt,
+	}
+}
+
+func CoreToCreateReponse(data game.Core) CreateGameResponse {
+	return CreateGameResponse{
+		Id:          data.Id,
+		Name:        data.Name,
+		Description: data.Description,
+		Price:       data.Price,
+		Stock:       data.Stock,
+		Discount:    data.Discount,
 		Publisher:   data.Publisher,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,

@@ -10,27 +10,27 @@ type gameUsecase struct {
 }
 
 // GetAll implements game.UseCaseinterface.
-func (uc *gameUsecase) GetAll() ([]game.GameCore, error) {
-	resp, err := uc.gameRepository.SelectAll()
+func (uc *gameUsecase) GetAll(params game.GameParams) ([]game.Core, error) {
+	resp, err := uc.gameRepository.SelectAll(params)
 
 	return resp, err
 }
 
 // GetById implements game.UseCaseinterface.
-func (uc *gameUsecase) GetById(id string) (*game.GameCore, error) {
+func (uc *gameUsecase) GetById(id string) (game.Core, error) {
 	resp, err := uc.gameRepository.SelectById(id)
 
 	if id == "" {
-		return &game.GameCore{}, errors.New("id is required")
+		return game.Core{}, errors.New("id is required")
 	}
 
 	return resp, err
 }
 
 // Insert implements game.UseCaseinterface.
-func (uc *gameUsecase) Insert(data game.GameCore) (*game.GameCore, error) {
+func (uc *gameUsecase) Insert(data game.Core) (game.Core, error) {
 	if data.Name == "" {
-		return nil, errors.New("name is required")
+		return game.Core{}, errors.New("name is required")
 	}
 	response, err := uc.gameRepository.Insert(data)
 
@@ -38,7 +38,7 @@ func (uc *gameUsecase) Insert(data game.GameCore) (*game.GameCore, error) {
 }
 
 // Update implements game.UseCaseinterface.
-func (uc *gameUsecase) Update(id string, data game.GameCore) error {
+func (uc *gameUsecase) Update(id string, data game.Core) error {
 
 	err := uc.gameRepository.Update(id, data)
 
