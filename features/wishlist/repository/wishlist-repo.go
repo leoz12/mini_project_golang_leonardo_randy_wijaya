@@ -14,27 +14,43 @@ type wishlistRepository struct {
 }
 
 // SelectAll implements wishlist.DataInterface.
-func (repo *wishlistRepository) SelectAll(userId string) ([]wishlist.WishlistCore, error) {
+func (repo *wishlistRepository) SelectAll(userId string) ([]wishlist.Core, error) {
 	var wishlists []Wishlist
-	tx := repo.db.Where("user_id = ?", userId).Preload("Game").Find(&wishlists)
+	tx := repo.db.Where("user_id = ?", userId).Preload("Game").Preload("Game.Genres").Find(&wishlists)
+
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 
-	var wishlistsCore []wishlist.WishlistCore
+	var wishlistsCore []wishlist.Core
 	for _, val := range wishlists {
 		wishlistsCore = append(wishlistsCore, ModelToCore(val))
 	}
 	return wishlistsCore, nil
 }
 
+// SelectById implements wishlist.DataInterface.
+func (repo *wishlistRepository) SelectById(id string) (wishlist.Core, error) {
+	var data Wishlist
+	tx := repo.db.Where("id = ?", id).First(&data)
+
+	if tx.RowsAffected == 0 {
+		return wishlist.Core{}, errors.New("invalid id")
+	}
+
+	if tx.Error != nil {
+		return wishlist.Core{}, tx.Error
+	}
+	return ModelToCore(data), nil
+}
+
 // Insert implements wishlist.DataInterface.
-func (repo *wishlistRepository) Insert(data wishlist.WishlistCore) (wishlist.WishlistCore, error) {
+func (repo *wishlistRepository) Insert(data wishlist.Core) (wishlist.Core, error) {
 	var Game gameRepository.Game
 	txGame := repo.db.Where("id = ?", data.GameId).First(&Game)
 
 	if txGame.RowsAffected == 0 {
-		return wishlist.WishlistCore{}, errors.New("invalid game id")
+		return wishlist.Core{}, errors.New("invalid game id")
 	}
 
 	var input = Wishlist{
@@ -45,7 +61,7 @@ func (repo *wishlistRepository) Insert(data wishlist.WishlistCore) (wishlist.Wis
 	tx := repo.db.Create(&input)
 	input.Game = Game
 	if tx.Error != nil {
-		return wishlist.WishlistCore{}, tx.Error
+		return wishlist.Core{}, tx.Error
 	}
 	return ModelToCore(input), nil
 }

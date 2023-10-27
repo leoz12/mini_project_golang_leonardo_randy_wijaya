@@ -56,7 +56,7 @@ func (handler *wishlistController) CreateWishlist(c echo.Context) error {
 		})
 	}
 
-	data := wishlist.WishlistCore{
+	data := wishlist.Core{
 		UserId: tokenData.Id,
 		GameId: input.GameId,
 	}
@@ -79,11 +79,13 @@ func (handler *wishlistController) DeleteWishlist(c echo.Context) error {
 	}
 	id := c.Param("id")
 
-	err := handler.wishlistUsecase.Delete(id)
+	err := handler.wishlistUsecase.Delete(id, tokenData.Id)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "invalid") {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		} else if strings.Contains(err.Error(), "unauthorized") {
+			return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
