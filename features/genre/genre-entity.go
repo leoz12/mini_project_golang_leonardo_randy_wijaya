@@ -4,23 +4,25 @@ import (
 	"time"
 )
 
-type GenreCore struct {
-	ID        string
+type Core struct {
+	Id        string
 	Name      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type DataInterface interface {
-	SelectAll() ([]GenreCore, error)
-	Insert(data GenreCore) (*GenreCore, error)
-	Update(id string, data GenreCore) error
+	SelectAll() ([]Core, error)
+	SelectById(id string) (Core, error)
+	Insert(data Core) (Core, error)
+	Update(id string, data Core) error
 	Delete(id string) error
 }
 
 type UseCaseInterface interface {
-	GetAll() ([]GenreCore, error)
-	Insert(data GenreCore) (*GenreCore, error)
-	Update(id string, data GenreCore) error
+	GetAll() ([]Core, error)
+	GetById(id string) (Core, error)
+	Insert(data Core) (Core, error)
+	Update(id string, data Core) error
 	Delete(id string) error
 }

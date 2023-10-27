@@ -20,7 +20,7 @@ func New(genreUC genre.UseCaseInterface) *genreController {
 	}
 }
 
-func (handler *genreController) GetAllGenre(c echo.Context) error {
+func (handler *genreController) GetAllGenres(c echo.Context) error {
 
 	tokenData := middlewares.ExtractToken(c)
 
@@ -33,17 +33,31 @@ func (handler *genreController) GetAllGenre(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
-	var responses = []GenreDataResponse{}
+	var responses = []GenreResponse{}
 
 	for _, val := range resp {
-		responses = append(responses, GenreDataResponse{
-			Id:        val.ID,
-			Name:      val.Name,
-			CreatedAt: val.CreatedAt,
-			UpdatedAt: val.UpdatedAt,
-		})
+		responses = append(responses, CoreToResponse(val))
 	}
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success get all data", responses))
+}
+
+func (handler *genreController) GetGenreById(c echo.Context) error {
+	tokenData := middlewares.ExtractToken(c)
+
+	if tokenData.Id == "" {
+		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
+	}
+
+	id := c.Param("id")
+	resp, err := handler.genreUsecase.GetById(id)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "invalid") {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		}
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
+	}
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success get data", CoreToResponse(resp)))
 }
 
 func (handler *genreController) CreateGenre(c echo.Context) error {
@@ -60,7 +74,7 @@ func (handler *genreController) CreateGenre(c echo.Context) error {
 			"message": "error bind data",
 		})
 	}
-	data := genre.GenreCore{
+	data := genre.Core{
 		Name: input.Name,
 	}
 	resp, err := handler.genreUsecase.Insert(data)
@@ -71,8 +85,8 @@ func (handler *genreController) CreateGenre(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create data", GenreDataResponse{
-		Id:        resp.ID,
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create data", GenreResponse{
+		Id:        resp.Id,
 		Name:      resp.Name,
 		CreatedAt: resp.CreatedAt,
 		UpdatedAt: resp.UpdatedAt,
@@ -95,7 +109,7 @@ func (handler *genreController) UpdateGenre(c echo.Context) error {
 			"message": "error bind data",
 		})
 	}
-	data := genre.GenreCore{
+	data := genre.Core{
 		Name: input.Name,
 	}
 	err := handler.genreUsecase.Update(id, data)

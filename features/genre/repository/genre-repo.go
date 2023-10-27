@@ -13,20 +13,20 @@ type genreRepository struct {
 }
 
 // SelectAll implements genre.DataInterface.
-func (repo *genreRepository) SelectAll() ([]genre.GenreCore, error) {
+func (repo *genreRepository) SelectAll() ([]genre.Core, error) {
 
 	var genres []Genre
 
 	tx := repo.db.Find(&genres)
 
-	var genresCore []genre.GenreCore
+	var genresCore []genre.Core
 
 	if tx.Error != nil {
 		return genresCore, tx.Error
 	}
 	for _, val := range genres {
-		genresCore = append(genresCore, genre.GenreCore{
-			ID:        val.ID,
+		genresCore = append(genresCore, genre.Core{
+			Id:        val.ID,
 			Name:      val.Name,
 			CreatedAt: val.CreatedAt,
 			UpdatedAt: val.UpdatedAt,
@@ -35,8 +35,29 @@ func (repo *genreRepository) SelectAll() ([]genre.GenreCore, error) {
 	return genresCore, nil
 }
 
+// SelectById implements genre.DataInterface.
+func (repo *genreRepository) SelectById(id string) (genre.Core, error) {
+	var data Genre
+
+	tx := repo.db.Where("id = ?", id).First(&data)
+
+	if tx.RowsAffected == 0 {
+		return genre.Core{}, errors.New("invalid id")
+	}
+
+	if tx.Error != nil {
+		return genre.Core{}, tx.Error
+	}
+	return genre.Core{
+		Id:        data.ID,
+		Name:      data.Name,
+		CreatedAt: data.CreatedAt,
+		UpdatedAt: data.UpdatedAt,
+	}, nil
+}
+
 // Insert implements genre.DataInterface.
-func (repo *genreRepository) Insert(data genre.GenreCore) (*genre.GenreCore, error) {
+func (repo *genreRepository) Insert(data genre.Core) (genre.Core, error) {
 	var input = Genre{
 		ID:   uuid.New().String(),
 		Name: data.Name,
@@ -44,10 +65,10 @@ func (repo *genreRepository) Insert(data genre.GenreCore) (*genre.GenreCore, err
 	tx := repo.db.Create(&input)
 
 	if tx.Error != nil {
-		return &genre.GenreCore{}, tx.Error
+		return genre.Core{}, tx.Error
 	}
-	return &genre.GenreCore{
-		ID:        input.ID,
+	return genre.Core{
+		Id:        input.ID,
 		Name:      input.Name,
 		CreatedAt: input.CreatedAt,
 		UpdatedAt: input.UpdatedAt,
@@ -55,7 +76,7 @@ func (repo *genreRepository) Insert(data genre.GenreCore) (*genre.GenreCore, err
 }
 
 // Update implements genre.DataInterface.
-func (repo *genreRepository) Update(id string, data genre.GenreCore) error {
+func (repo *genreRepository) Update(id string, data genre.Core) error {
 	tx := repo.db.Model(&Genre{
 		ID: id,
 	}).Update("name", data.Name)
