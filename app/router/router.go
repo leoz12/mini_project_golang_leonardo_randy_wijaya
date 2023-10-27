@@ -21,6 +21,14 @@ import (
 	wishlistRepository "mini_project/features/wishlist/repository"
 	wishlistUseCase "mini_project/features/wishlist/usecase"
 
+	transactionHandler "mini_project/features/transaction/handler"
+	transactionRepository "mini_project/features/transaction/repository"
+	transactionUseCase "mini_project/features/transaction/usecase"
+
+	commentHandler "mini_project/features/comment/handler"
+	commentRepository "mini_project/features/comment/repository"
+	commentUseCase "mini_project/features/comment/usecase"
+
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -46,23 +54,34 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	wishlistUsecase := wishlistUseCase.New(wishlistRepository)
 	wishlistController := wishlistHandler.New(wishlistUsecase)
 
+	transactionRepository := transactionRepository.New(db)
+	transactionUsecase := transactionUseCase.New(transactionRepository)
+	transactionController := transactionHandler.New(transactionUsecase)
+
+	commentRepository := commentRepository.New(db)
+	commentUsecase := commentUseCase.New(commentRepository)
+	commentController := commentHandler.New(commentUsecase)
+
 	user := e.Group("/user")
+	user.GET("", userController.GetAllUser, middlewares.JWTMiddleware())
 	user.POST("/register", userController.CreateUser)
 	user.POST("/login", userController.UserLogin)
 
 	admin := e.Group("/admin")
+	admin.GET("", adminController.GetAllAdmin, middlewares.JWTMiddleware())
 	admin.POST("/register", adminController.CreateUser)
 	admin.POST("/login", adminController.UserLogin)
 
-	genre := e.Group("/genre", middlewares.JWTMiddleware())
-	genre.GET("", genreController.GetAllGenre)
+	genre := e.Group("/genres", middlewares.JWTMiddleware())
+	genre.GET("", genreController.GetAllGenres)
+	genre.GET("/:id", genreController.GetGenreById)
 	genre.POST("", genreController.CreateGenre)
 	genre.PUT("/:id", genreController.UpdateGenre)
 	genre.DELETE("/:id", genreController.DeleteGenre)
 
-	game := e.Group("/game", middlewares.JWTMiddleware())
-	game.GET("", gameController.GetAllGame)
-	game.GET("/:id", gameController.GetById)
+	game := e.Group("/games", middlewares.JWTMiddleware())
+	game.GET("", gameController.GetAllGames)
+	game.GET("/:id", gameController.GetGameById)
 	game.POST("", gameController.CreateGame)
 	game.PUT("/:id", gameController.UpdateGame)
 	game.DELETE("/:id", gameController.DeleteGame)
@@ -71,4 +90,16 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	wishlists.GET("", wishlistController.GetWishlists)
 	wishlists.POST("", wishlistController.CreateWishlist)
 	wishlists.DELETE("/:id", wishlistController.DeleteWishlist)
+
+	transactions := e.Group("/transactions", middlewares.JWTMiddleware())
+	transactions.GET("", transactionController.GetAllTransactions)
+	transactions.GET("/:id", transactionController.GetTransactionById)
+	transactions.POST("", transactionController.CreateTransaction)
+
+	comments := e.Group("/comments", middlewares.JWTMiddleware())
+	comments.GET("/game/:gameId", commentController.GetAllComment)
+	comments.GET("/:id", commentController.GetCommentById)
+	comments.POST("", commentController.CreateComment)
+	comments.PUT("/:id", commentController.UpdateComment)
+	comments.DELETE("/:id", commentController.DeleteComment)
 }
