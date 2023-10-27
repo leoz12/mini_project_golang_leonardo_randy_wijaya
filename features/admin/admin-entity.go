@@ -2,24 +2,22 @@ package admin
 
 import "time"
 
-type AdminCore struct {
-	ID        string
+type Core struct {
+	Id        string
 	Email     string
 	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-type LoginCore struct {
-	Email    string
-	Password string
-}
 
 type DataInterface interface {
-	Insert(data AdminCore) error
-	CheckByEmail(email string) (*AdminCore, error)
+	SelectAll() ([]Core, error)
+	Insert(data Core) error
+	CheckByEmail(email string) (Core, error)
 }
 
 type UseCaseInterface interface {
-	Create(data AdminCore) error
-	Login(data LoginCore) (string, error)
+	GetAll() ([]Core, error)
+	Create(data Core) error
+	Login(data Core) (string, error)
 }
