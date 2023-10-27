@@ -11,9 +11,15 @@ type adminUseCase struct {
 	adminRepository admin.DataInterface
 }
 
-func (uc *adminUseCase) Create(data admin.AdminCore) error {
+func (uc *adminUseCase) GetAll() ([]admin.Core, error) {
+	resp, err := uc.adminRepository.SelectAll()
+
+	return resp, err
+}
+
+func (uc *adminUseCase) Create(data admin.Core) error {
 	if data.Email == "" || data.Password == "" {
-		return errors.New("[validation] error. email dan password harus diisi")
+		return errors.New("email and password are required")
 	}
 
 	hashPassword, errHash := helpers.HashPassword(data.Password)
@@ -28,10 +34,10 @@ func (uc *adminUseCase) Create(data admin.AdminCore) error {
 	return err
 }
 
-func (uc *adminUseCase) Login(data admin.LoginCore) (string, error) {
+func (uc *adminUseCase) Login(data admin.Core) (string, error) {
 
 	if data.Email == "" || data.Password == "" {
-		return "", errors.New("[validation] error. email dan password harus diisi")
+		return "", errors.New("email and password are required")
 	}
 
 	dataUser, err := uc.adminRepository.CheckByEmail(data.Email)
@@ -41,7 +47,7 @@ func (uc *adminUseCase) Login(data admin.LoginCore) (string, error) {
 	}
 
 	if helpers.CheckPasswordHash(dataUser.Password, data.Password) {
-		token, errToken := middlewares.CreateToken(dataUser.ID, "admin")
+		token, errToken := middlewares.CreateToken(dataUser.Id, "admin")
 
 		if errToken != nil {
 			return "", errToken

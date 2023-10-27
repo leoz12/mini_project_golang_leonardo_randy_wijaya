@@ -3,6 +3,9 @@ package gameRepository
 import (
 	"errors"
 	"mini_project/features/game"
+	"mini_project/features/genre"
+	genreRepository "mini_project/features/genre/repository"
+	"strings"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -13,56 +16,81 @@ type gameRepository struct {
 }
 
 // SelectAll implements game.DataInterface.
-func (repo *gameRepository) SelectAll() ([]game.GameCore, error) {
+func (repo *gameRepository) SelectAll(params game.GameParams) ([]game.Core, error) {
 	var games []Game
+	var tx *gorm.DB
+	if len(strings.Split(params.Genres, ",")) > 0 && params.Genres != "" {
+		tx = repo.db.Preload("Genres").Joins("JOIN game_genres gg ON gg.game_id = games.id").
+			Joins("JOIN genres g ON g.id = gg.genre_id").
+			Where("games.name LIKE ? AND g.name IN (?)", "%"+params.Search+"%", strings.Split(params.Genres, ",")).Group("id").Find(&games)
+	} else {
+		tx = repo.db.Preload("Genres").Joins("JOIN game_genres gg ON gg.game_id = games.id").
+			Joins("JOIN genres g ON g.id = gg.genre_id").
+			Where("games.name LIKE ?", "%"+params.Search+"%").Group("id").Find(&games)
+	}
 
-	tx := repo.db.Find(&games)
-
-	var GamesCore []game.GameCore
+	var gamesCore []game.Core
 
 	if tx.Error != nil {
-		return GamesCore, tx.Error
+		return gamesCore, tx.Error
 	}
 	for _, val := range games {
-		GamesCore = append(GamesCore, game.GameCore{
-			ID:          val.ID,
+		var genresCore []genre.Core
+		for _, cur := range val.Genres {
+			genresCore = append(genresCore, genre.Core{
+				Id:   cur.ID,
+				Name: cur.Name,
+			})
+		}
+		gamesCore = append(gamesCore, game.Core{
+			Id:          val.ID,
 			Name:        val.Name,
 			Description: val.Description,
 			Price:       val.Price,
 			Stock:       val.Stock,
 			Discount:    val.Discount,
-			Genre:       val.Genre,
+			Genres:      genresCore,
+			ImageUrl:    val.ImageUrl,
 			Publisher:   val.Publisher,
 			ReleaseDate: val.ReleaseDate,
 			CreatedAt:   val.CreatedAt,
 			UpdatedAt:   val.UpdatedAt,
 		})
 	}
-	return GamesCore, nil
+	return gamesCore, nil
 }
 
 // SelectById implements game.DataInterface.
-func (repo *gameRepository) SelectById(id string) (*game.GameCore, error) {
+func (repo *gameRepository) SelectById(id string) (game.Core, error) {
 	var data Game
 
-	tx := repo.db.Where("id = ?", id).First(&data)
+	tx := repo.db.Preload("Genres").Where("id = ?", id).First(&data)
 
 	if tx.RowsAffected == 0 {
-		return &game.GameCore{}, errors.New("invalid id")
+		return game.Core{}, errors.New("invalid id")
 	}
 
 	if tx.Error != nil {
-		return &game.GameCore{}, tx.Error
+		return game.Core{}, tx.Error
 	}
 
-	return &game.GameCore{
-		ID:          data.ID,
+	var genresCore []genre.Core
+	for _, cur := range data.Genres {
+		genresCore = append(genresCore, genre.Core{
+			Id:   cur.ID,
+			Name: cur.Name,
+		})
+	}
+
+	return game.Core{
+		Id:          data.ID,
 		Name:        data.Name,
 		Description: data.Description,
 		Price:       data.Price,
 		Stock:       data.Stock,
 		Discount:    data.Discount,
-		Genre:       data.Genre,
+		Genres:      genresCore,
+		ImageUrl:    data.ImageUrl,
 		Publisher:   data.Publisher,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,
@@ -71,7 +99,15 @@ func (repo *gameRepository) SelectById(id string) (*game.GameCore, error) {
 }
 
 // Insert implements game.DataInterface.
-func (repo *gameRepository) Insert(data game.GameCore) (*game.GameCore, error) {
+func (repo *gameRepository) Insert(data game.Core) (game.Core, error) {
+	var genres []genreRepository.Genre
+
+	for _, val := range data.Genres {
+		genres = append(genres, genreRepository.Genre{
+			ID: val.Id,
+		})
+	}
+
 	var input = Game{
 		ID:          uuid.New().String(),
 		Name:        data.Name,
@@ -79,7 +115,8 @@ func (repo *gameRepository) Insert(data game.GameCore) (*game.GameCore, error) {
 		Price:       data.Price,
 		Stock:       data.Stock,
 		Discount:    data.Discount,
-		Genre:       data.Genre,
+		Genres:      genres,
+		ImageUrl:    data.ImageUrl,
 		Publisher:   data.Publisher,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,
@@ -88,16 +125,16 @@ func (repo *gameRepository) Insert(data game.GameCore) (*game.GameCore, error) {
 	tx := repo.db.Create(&input)
 
 	if tx.Error != nil {
-		return &game.GameCore{}, tx.Error
+		return game.Core{}, tx.Error
 	}
-	return &game.GameCore{
-		ID:          input.ID,
+	return game.Core{
+		Id:          input.ID,
 		Name:        input.Name,
 		Description: input.Description,
 		Price:       input.Price,
 		Stock:       input.Stock,
 		Discount:    input.Discount,
-		Genre:       input.Genre,
+		// Genre:       input.Genre,
 		Publisher:   input.Publisher,
 		ReleaseDate: input.ReleaseDate,
 		CreatedAt:   input.CreatedAt,
@@ -106,7 +143,14 @@ func (repo *gameRepository) Insert(data game.GameCore) (*game.GameCore, error) {
 }
 
 // Update implements game.DataInterface.
-func (repo *gameRepository) Update(id string, data game.GameCore) error {
+func (repo *gameRepository) Update(id string, data game.Core) error {
+	var genres []genreRepository.Genre
+
+	for _, val := range data.Genres {
+		genres = append(genres, genreRepository.Genre{
+			ID: val.Id,
+		})
+	}
 	tx := repo.db.Model(&Game{
 		ID: id,
 	}).Updates(Game{
@@ -115,16 +159,22 @@ func (repo *gameRepository) Update(id string, data game.GameCore) error {
 		Price:       data.Price,
 		Stock:       data.Stock,
 		Discount:    data.Discount,
-		Genre:       data.Genre,
+		Genres:      genres,
 		Publisher:   data.Publisher,
 		ReleaseDate: data.ReleaseDate,
 	})
+	txGenre := repo.db.Model(&Game{
+		ID: id,
+	}).Association("Genres").Replace(genres)
 
 	if tx.RowsAffected == 0 {
 		return errors.New("invalid id")
 	}
 	if tx.Error != nil {
 		return tx.Error
+	}
+	if txGenre != nil {
+		return txGenre
 	}
 	return nil
 }

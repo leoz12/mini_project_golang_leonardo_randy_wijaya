@@ -1,6 +1,7 @@
 package gameRepository
 
 import (
+	genreRepository "mini_project/features/genre/repository"
 	"time"
 
 	"gorm.io/gorm"
@@ -13,8 +14,9 @@ type Game struct {
 	Price       float32
 	Stock       int
 	Discount    float32
-	Genre       string
 	Publisher   string
+	Genres      []genreRepository.Genre `gorm:"many2many:game_genres;"`
+	ImageUrl    string
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
