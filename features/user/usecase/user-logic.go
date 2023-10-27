@@ -7,13 +7,19 @@ import (
 	"mini_project/utils/helpers"
 )
 
-type userUsecase struct {
+type userUseCase struct {
 	userRepository user.DataInterface
 }
 
-func (uc *userUsecase) Register(data user.UserCore) error {
+func (uc *userUseCase) GetAll() ([]user.Core, error) {
+	resp, err := uc.userRepository.SelectAll()
+
+	return resp, err
+}
+
+func (uc *userUseCase) Register(data user.Core) error {
 	if data.Email == "" || data.Password == "" {
-		return errors.New("[validation] error. email dan password harus diisi")
+		return errors.New("email and password are required")
 	}
 
 	hashPassword, errHash := helpers.HashPassword(data.Password)
@@ -28,10 +34,10 @@ func (uc *userUsecase) Register(data user.UserCore) error {
 	return err
 }
 
-func (uc *userUsecase) Login(data user.LoginCore) (string, error) {
+func (uc *userUseCase) Login(data user.Core) (string, error) {
 
 	if data.Email == "" || data.Password == "" {
-		return "", errors.New("[validation] error. email dan password harus diisi")
+		return "", errors.New("email and password are required")
 	}
 
 	dataUser, err := uc.userRepository.CheckByEmail(data.Email)
@@ -41,7 +47,7 @@ func (uc *userUsecase) Login(data user.LoginCore) (string, error) {
 	}
 
 	if helpers.CheckPasswordHash(dataUser.Password, data.Password) {
-		token, errToken := middlewares.CreateToken(dataUser.ID, "user")
+		token, errToken := middlewares.CreateToken(dataUser.Id, "user")
 
 		if errToken != nil {
 			return "", errToken
@@ -53,7 +59,7 @@ func (uc *userUsecase) Login(data user.LoginCore) (string, error) {
 }
 
 func New(userRepo user.DataInterface) user.UseCaseInterface {
-	return &userUsecase{
+	return &userUseCase{
 		userRepository: userRepo,
 	}
 }

@@ -2,7 +2,9 @@ package userHandler
 
 import (
 	"errors"
+	"mini_project/app/middlewares"
 	"mini_project/features/user"
+	"mini_project/utils/helpers"
 	"net/http"
 	"strings"
 
@@ -12,76 +14,80 @@ import (
 )
 
 type userController struct {
-	userUsecase user.UseCaseInterface
+	userUseCase user.UseCaseInterface
 }
 
 func New(userUC user.UseCaseInterface) *userController {
 	return &userController{
-		userUsecase: userUC,
+		userUseCase: userUC,
 	}
+}
+
+func (handler *userController) GetAllUser(c echo.Context) error {
+
+	tokenData := middlewares.ExtractToken(c)
+
+	if tokenData.Role != "admin" {
+		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
+	}
+
+	resp, err := handler.userUseCase.GetAll()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
+	}
+	var responses = []UserResponse{}
+
+	for _, val := range resp {
+		responses = append(responses, CoreToResponse(val))
+	}
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success get all data", responses))
 }
 
 func (handler *userController) CreateUser(c echo.Context) error {
 	input := new(UserRegisterRequest)
 	errBind := c.Bind(&input)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"message": "error bind data",
-		})
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"+errBind.Error()))
 	}
 
-	data := user.UserCore{
+	data := user.Core{
 		Name:     input.Name,
 		Email:    input.Email,
 		Password: input.Password,
 	}
 	var mysqlErr *mysql.MySQLError
 
-	err := handler.userUsecase.Register(data)
+	err := handler.userUseCase.Register(data)
 	if err != nil {
-		if strings.Contains(err.Error(), "validation") {
-			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"message": err.Error(),
-			})
+		if strings.Contains(err.Error(), "required") {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 
 		} else if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
-			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"message": "the email has already been taken",
-			})
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse("the email has already been taken"))
 		}
 
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"message": err.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
-	return c.JSON(http.StatusCreated, map[string]any{
-		"message": "success insert data",
-	})
+	return c.JSON(http.StatusCreated, helpers.SuccessResponse("success insert data"))
 }
 
 func (handler *userController) UserLogin(c echo.Context) error {
 	input := new(UserLoginRequest)
 	errBind := c.Bind(&input)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"message": "error bind data",
-		})
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"+errBind.Error()))
 	}
 
-	data := user.LoginCore{
+	data := user.Core{
 		Email:    input.Email,
 		Password: input.Password,
 	}
-	token, err := handler.userUsecase.Login(data)
+	token, err := handler.userUseCase.Login(data)
 	if err == gorm.ErrRecordNotFound {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "invalid email or password",
-		})
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("invalid email or password"))
 	} else if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"message": err.Error(),
-		})
-
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{
