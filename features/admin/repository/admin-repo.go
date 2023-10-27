@@ -12,7 +12,27 @@ type adminRepository struct {
 	db *gorm.DB
 }
 
-func (repo *adminRepository) Insert(data admin.AdminCore) error {
+func (repo *adminRepository) SelectAll() ([]admin.Core, error) {
+	var admins []Admin
+	var adminsCore []admin.Core
+	tx := repo.db.Find(&admins)
+
+	if tx.Error != nil {
+		return adminsCore, tx.Error
+	}
+	for _, val := range admins {
+		adminsCore = append(adminsCore, admin.Core{
+			Id:        val.ID,
+			Email:     val.Email,
+			CreatedAt: val.CreatedAt,
+			UpdatedAt: val.UpdatedAt,
+		})
+	}
+	return adminsCore, nil
+
+}
+
+func (repo *adminRepository) Insert(data admin.Core) error {
 	var input = Admin{
 		ID:       uuid.New().String(),
 		Email:    data.Email,
@@ -25,20 +45,20 @@ func (repo *adminRepository) Insert(data admin.AdminCore) error {
 	return nil
 }
 
-func (repo *adminRepository) CheckByEmail(email string) (*admin.AdminCore, error) {
+func (repo *adminRepository) CheckByEmail(email string) (admin.Core, error) {
 	var data Admin
 
 	tx := repo.db.Where("email = ?", email).First(&data)
 
 	if tx.Error == gorm.ErrRecordNotFound {
-		return &admin.AdminCore{}, errors.New("invalid email or password")
+		return admin.Core{}, errors.New("invalid email or password")
 
 	} else if tx.Error != nil {
-		return &admin.AdminCore{}, tx.Error
+		return admin.Core{}, tx.Error
 	}
 
-	return &admin.AdminCore{
-		ID:        data.ID,
+	return admin.Core{
+		Id:        data.ID,
 		Password:  data.Password,
 		CreatedAt: data.CreatedAt,
 		UpdatedAt: data.UpdatedAt,
