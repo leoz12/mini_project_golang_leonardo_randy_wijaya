@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-type UserCore struct {
-	ID        string
+type Core struct {
+	Id        string
 	Name      string
 	Email     string
 	Password  string
@@ -13,17 +13,14 @@ type UserCore struct {
 	UpdatedAt time.Time
 }
 
-type LoginCore struct {
-	Email    string
-	Password string
-}
-
 type DataInterface interface {
-	Insert(data UserCore) error
-	CheckByEmail(email string) (*UserCore, error)
+	SelectAll() ([]Core, error)
+	Insert(data Core) error
+	CheckByEmail(email string) (Core, error)
 }
 
 type UseCaseInterface interface {
-	Register(data UserCore) error
-	Login(data LoginCore) (string, error)
+	GetAll() ([]Core, error)
+	Register(data Core) error
+	Login(data Core) (string, error)
 }
