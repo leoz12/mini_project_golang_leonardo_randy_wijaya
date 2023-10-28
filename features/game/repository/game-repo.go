@@ -62,7 +62,7 @@ func (repo *gameRepository) SelectAll(params game.GameParams) ([]game.Core, erro
 }
 
 // SelectById implements game.DataInterface.
-func (repo *gameRepository) SelectById(id string) (game.Core, error) {
+func (repo *gameRepository) SelectById(id string, userId string) (game.Core, error) {
 	var data Game
 
 	tx := repo.db.Preload("Genres").Where("id = ?", id).First(&data)
@@ -73,6 +73,18 @@ func (repo *gameRepository) SelectById(id string) (game.Core, error) {
 
 	if tx.Error != nil {
 		return game.Core{}, tx.Error
+	}
+
+	var count int
+	txTransactions := repo.db.Raw("SELECT COUNT(*) FROM transactions WHERE game_id = ? AND user_id = ?", id, userId).Scan(&count)
+
+	if txTransactions.Error != nil {
+		return game.Core{}, txTransactions.Error
+	}
+	var canComment = false
+
+	if count > 0 {
+		canComment = true
 	}
 
 	var genresCore []genre.Core
@@ -94,6 +106,7 @@ func (repo *gameRepository) SelectById(id string) (game.Core, error) {
 		ImageUrl:    data.ImageUrl,
 		Publisher:   data.Publisher,
 		Platform:    data.Platform,
+		CanComment:  canComment,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
