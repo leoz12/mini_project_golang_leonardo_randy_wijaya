@@ -56,7 +56,7 @@ func (handler *gameController) GetGameById(c echo.Context) error {
 	}
 
 	id := c.Param("id")
-	resp, err := handler.gameUsecase.GetById(id)
+	resp, err := handler.gameUsecase.GetById(id, tokenData.Id)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "invalid") {

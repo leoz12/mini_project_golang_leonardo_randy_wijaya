@@ -17,8 +17,8 @@ func (uc *gameUsecase) GetAll(params game.GameParams) ([]game.Core, error) {
 }
 
 // GetById implements game.UseCaseinterface.
-func (uc *gameUsecase) GetById(id string) (game.Core, error) {
-	resp, err := uc.gameRepository.SelectById(id)
+func (uc *gameUsecase) GetById(id string, userId string) (game.Core, error) {
+	resp, err := uc.gameRepository.SelectById(id, userId)
 
 	if id == "" {
 		return game.Core{}, errors.New("id is required")

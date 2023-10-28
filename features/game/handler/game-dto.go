@@ -60,6 +60,7 @@ type GameResponse struct {
 	Genres      []GameGenre
 	Publisher   string
 	Platform    string
+	CanComment  bool
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -126,6 +127,7 @@ func CoreToReponse(data game.Core) GameResponse {
 		ImageUrl:    data.ImageUrl,
 		Publisher:   data.Publisher,
 		Platform:    data.Platform,
+		CanComment:  data.CanComment,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
