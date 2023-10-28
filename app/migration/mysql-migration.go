@@ -5,6 +5,7 @@ import (
 	commentRepository "mini_project/features/comment/repository"
 	gameRepository "mini_project/features/game/repository"
 	genreRepository "mini_project/features/genre/repository"
+	recommendationRepository "mini_project/features/recommendation/repository"
 	transactionRepository "mini_project/features/transaction/repository"
 	userRepository "mini_project/features/user/repository"
 	wishlistRepository "mini_project/features/wishlist/repository"
@@ -21,5 +22,6 @@ func InitMigrationMysql(db *gorm.DB) {
 		&wishlistRepository.Wishlist{},
 		&transactionRepository.Transaction{},
 		&commentRepository.Comment{},
+		&recommendationRepository.Recommendation{},
 	)
 }
