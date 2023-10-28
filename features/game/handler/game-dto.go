@@ -15,6 +15,7 @@ type CreateRequest struct {
 	Publisher   string   `json:"publisher" form:"publisher"`
 	ReleaseDate string   `json:"releaseDate" form:"releaseDate"`
 	ImageUrl    string   `json:"ImageUrl" form:"ImageUrl"`
+	Platform    string   `json:"Platform" form:"Platform"`
 }
 
 type UpdateRequest struct {
@@ -27,6 +28,7 @@ type UpdateRequest struct {
 	Publisher   string    `json:"publisher" form:"publisher"`
 	ReleaseDate time.Time `json:"releaseDate" form:"releaseDate"`
 	ImageUrl    string    `json:"ImageUrl" form:"ImageUrl"`
+	Platform    string    `json:"Platform" form:"Platform"`
 }
 
 type GameGenre struct {
@@ -40,6 +42,8 @@ type GameLiteResponse struct {
 	Price       float32
 	Stock       int
 	Discount    float32
+	ImageUrl    string
+	Platform    string
 	Genres      []GameGenre
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -55,6 +59,7 @@ type GameResponse struct {
 	ImageUrl    string
 	Genres      []GameGenre
 	Publisher   string
+	Platform    string
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -68,6 +73,8 @@ type CreateGameResponse struct {
 	Stock       int
 	Discount    float32
 	Publisher   string
+	ImageUrl    string
+	Platform    string
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -91,6 +98,8 @@ func CoreToLiteReponse(data game.Core) GameLiteResponse {
 		Stock:       data.Stock,
 		Discount:    data.Discount,
 		Genres:      gameGenres,
+		ImageUrl:    data.ImageUrl,
+		Platform:    data.Platform,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
 	}
@@ -116,6 +125,7 @@ func CoreToReponse(data game.Core) GameResponse {
 		Genres:      gameGenres,
 		ImageUrl:    data.ImageUrl,
 		Publisher:   data.Publisher,
+		Platform:    data.Platform,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
@@ -131,6 +141,8 @@ func CoreToCreateReponse(data game.Core) CreateGameResponse {
 		Stock:       data.Stock,
 		Discount:    data.Discount,
 		Publisher:   data.Publisher,
+		ImageUrl:    data.ImageUrl,
+		Platform:    data.Platform,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
