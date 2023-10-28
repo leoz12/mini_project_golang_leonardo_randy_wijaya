@@ -40,6 +40,10 @@ func (uc *gameUsecase) Insert(data game.Core) (game.Core, error) {
 // Update implements game.UseCaseinterface.
 func (uc *gameUsecase) Update(id string, data game.Core) error {
 
+	if data.Name == "" {
+		return errors.New("name is required")
+	}
+
 	err := uc.gameRepository.Update(id, data)
 
 	return err

@@ -104,6 +104,8 @@ func (handler *gameController) CreateGame(c echo.Context) error {
 		Discount:    input.Discount,
 		Genres:      genresCore,
 		Publisher:   input.Publisher,
+		ImageUrl:    input.ImageUrl,
+		Platform:    input.Platform,
 		ReleaseDate: parsedTime,
 	}
 	resp, err := handler.gameUsecase.Insert(data)
@@ -157,6 +159,8 @@ func (handler *gameController) UpdateGame(c echo.Context) error {
 		Genres:      genresCore,
 		Publisher:   input.Publisher,
 		ReleaseDate: parsedTime,
+		ImageUrl:    input.ImageUrl,
+		Platform:    input.Platform,
 	}
 	err := handler.gameUsecase.Update(id, data)
 

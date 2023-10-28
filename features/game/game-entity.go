@@ -15,6 +15,7 @@ type Core struct {
 	Genres      []genre.Core
 	Publisher   string
 	ImageUrl    string
+	Platform    string
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

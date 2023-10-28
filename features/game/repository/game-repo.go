@@ -52,6 +52,7 @@ func (repo *gameRepository) SelectAll(params game.GameParams) ([]game.Core, erro
 			Genres:      genresCore,
 			ImageUrl:    val.ImageUrl,
 			Publisher:   val.Publisher,
+			Platform:    val.Platform,
 			ReleaseDate: val.ReleaseDate,
 			CreatedAt:   val.CreatedAt,
 			UpdatedAt:   val.UpdatedAt,
@@ -92,6 +93,7 @@ func (repo *gameRepository) SelectById(id string) (game.Core, error) {
 		Genres:      genresCore,
 		ImageUrl:    data.ImageUrl,
 		Publisher:   data.Publisher,
+		Platform:    data.Platform,
 		ReleaseDate: data.ReleaseDate,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
@@ -119,6 +121,7 @@ func (repo *gameRepository) Insert(data game.Core) (game.Core, error) {
 		ImageUrl:    data.ImageUrl,
 		Publisher:   data.Publisher,
 		ReleaseDate: data.ReleaseDate,
+		Platform:    data.Platform,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
 	}
@@ -134,9 +137,10 @@ func (repo *gameRepository) Insert(data game.Core) (game.Core, error) {
 		Price:       input.Price,
 		Stock:       input.Stock,
 		Discount:    input.Discount,
-		// Genre:       input.Genre,
 		Publisher:   input.Publisher,
 		ReleaseDate: input.ReleaseDate,
+		ImageUrl:    input.ImageUrl,
+		Platform:    input.Platform,
 		CreatedAt:   input.CreatedAt,
 		UpdatedAt:   input.UpdatedAt,
 	}, nil
@@ -162,6 +166,8 @@ func (repo *gameRepository) Update(id string, data game.Core) error {
 		Genres:      genres,
 		Publisher:   data.Publisher,
 		ReleaseDate: data.ReleaseDate,
+		ImageUrl:    data.ImageUrl,
+		Platform:    data.Platform,
 	})
 	txGenre := repo.db.Model(&Game{
 		ID: id,

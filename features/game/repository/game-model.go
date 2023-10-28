@@ -17,6 +17,7 @@ type Game struct {
 	Publisher   string
 	Genres      []genreRepository.Genre `gorm:"many2many:game_genres;"`
 	ImageUrl    string
+	Platform    string
 	ReleaseDate time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

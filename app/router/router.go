@@ -5,6 +5,7 @@ import (
 	genreHandler "mini_project/features/genre/handler"
 	genreRepository "mini_project/features/genre/repository"
 	genreUseCase "mini_project/features/genre/usecase"
+	"mini_project/features/upload-image/handler"
 	userHandler "mini_project/features/user/handler"
 	userRepository "mini_project/features/user/repository"
 	userUsecase "mini_project/features/user/usecase"
@@ -118,4 +119,6 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	recommendations.POST("", recommendationController.Createrecommendation)
 	recommendations.PUT("/:id", recommendationController.Updaterecommendation)
 	recommendations.DELETE("/:id", recommendationController.Deleterecommendation)
+
+	e.POST("upload-image", handler.UploadImageController)
 }
