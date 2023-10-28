@@ -29,6 +29,10 @@ import (
 	commentRepository "mini_project/features/comment/repository"
 	commentUseCase "mini_project/features/comment/usecase"
 
+	recommendationHandler "mini_project/features/recommendation/handler"
+	recommendationRepository "mini_project/features/recommendation/repository"
+	recommendationUseCase "mini_project/features/recommendation/usecase"
+
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -61,6 +65,10 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	commentRepository := commentRepository.New(db)
 	commentUsecase := commentUseCase.New(commentRepository)
 	commentController := commentHandler.New(commentUsecase)
+
+	recommendationRepository := recommendationRepository.New(db)
+	recommendationUsecase := recommendationUseCase.New(recommendationRepository)
+	recommendationController := recommendationHandler.New(recommendationUsecase)
 
 	user := e.Group("/user")
 	user.GET("", userController.GetAllUser, middlewares.JWTMiddleware())
@@ -102,4 +110,12 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	comments.POST("", commentController.CreateComment)
 	comments.PUT("/:id", commentController.UpdateComment)
 	comments.DELETE("/:id", commentController.DeleteComment)
+
+	recommendations := e.Group("/recommendations", middlewares.JWTMiddleware())
+	recommendations.GET("/game/:id", recommendationController.Getrecommendation)
+	recommendations.GET("", recommendationController.GetAllrecommendations)
+	recommendations.GET("/:id", recommendationController.GetrecommendationById)
+	recommendations.POST("", recommendationController.Createrecommendation)
+	recommendations.PUT("/:id", recommendationController.Updaterecommendation)
+	recommendations.DELETE("/:id", recommendationController.Deleterecommendation)
 }

@@ -18,7 +18,8 @@ type AppConfig struct {
 }
 
 var (
-	SECRET_JWT = ""
+	SECRET_JWT  = ""
+	OPEN_AI_KEY = ""
 )
 
 func InitConfig() *AppConfig {
@@ -63,6 +64,10 @@ func loadConfig() *AppConfig {
 
 	if val, found := os.LookupEnv("SECRETJWT"); found {
 		SECRET_JWT = val
+	}
+
+	if val, found := os.LookupEnv("OPEN_AI_KEY"); found {
+		OPEN_AI_KEY = val
 	}
 
 	if val, found := os.LookupEnv("DBHOST"); found {
