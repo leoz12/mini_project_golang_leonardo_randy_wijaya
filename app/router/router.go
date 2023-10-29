@@ -120,5 +120,5 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	recommendations.PUT("/:id", recommendationController.UpdateRecommendation)
 	recommendations.DELETE("/:id", recommendationController.DeleteRecommendation)
 
-	e.POST("upload-image", handler.UploadImageController)
+	e.POST("upload-image", handler.UploadImageController, middlewares.JWTMiddleware())
 }
