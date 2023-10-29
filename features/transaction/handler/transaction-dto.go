@@ -34,6 +34,6 @@ func CoreToResponse(data transaction.Core) TransactionResponse {
 		Price:           data.Price,
 		Quantity:        data.Quantity,
 		Discount:        data.Discount,
-		TotalPrice:      (data.Price * (1 - data.Discount)) * float32(data.Quantity),
+		TotalPrice:      (data.Price * (100 - data.Discount) / 100) * float32(data.Quantity),
 	}
 }

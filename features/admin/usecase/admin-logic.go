@@ -18,9 +18,6 @@ func (uc *adminUseCase) GetAll() ([]admin.Core, error) {
 }
 
 func (uc *adminUseCase) Create(data admin.Core) error {
-	if data.Email == "" || data.Password == "" {
-		return errors.New("email and password are required")
-	}
 
 	hashPassword, errHash := helpers.HashPassword(data.Password)
 
@@ -35,10 +32,6 @@ func (uc *adminUseCase) Create(data admin.Core) error {
 }
 
 func (uc *adminUseCase) Login(data admin.Core) (string, error) {
-
-	if data.Email == "" || data.Password == "" {
-		return "", errors.New("email and password are required")
-	}
 
 	dataUser, err := uc.adminRepository.CheckByEmail(data.Email)
 

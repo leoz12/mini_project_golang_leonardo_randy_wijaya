@@ -20,7 +20,7 @@ func New(recommendationUC recommendation.UseCaseInterface) *recommendationContro
 	}
 }
 
-func (handler *recommendationController) Getrecommendation(c echo.Context) error {
+func (handler *recommendationController) GetRecommendation(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
 	if tokenData.Id == "" {
@@ -36,7 +36,7 @@ func (handler *recommendationController) Getrecommendation(c echo.Context) error
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success get data", resp))
 }
 
-func (handler *recommendationController) GetAllrecommendations(c echo.Context) error {
+func (handler *recommendationController) GetAllRecommendations(c echo.Context) error {
 
 	tokenData := middlewares.ExtractToken(c)
 
@@ -57,7 +57,7 @@ func (handler *recommendationController) GetAllrecommendations(c echo.Context) e
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success get all data", responses))
 }
 
-func (handler *recommendationController) GetrecommendationById(c echo.Context) error {
+func (handler *recommendationController) GetRecommendationById(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
 	if tokenData.Id == "" {
@@ -76,7 +76,7 @@ func (handler *recommendationController) GetrecommendationById(c echo.Context) e
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success get data", CoreToResponse(resp)))
 }
 
-func (handler *recommendationController) Createrecommendation(c echo.Context) error {
+func (handler *recommendationController) CreateRecommendation(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
 	if tokenData.Role != "admin" {
@@ -88,6 +88,12 @@ func (handler *recommendationController) Createrecommendation(c echo.Context) er
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"message": "error bind data",
+		})
+	}
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
 		})
 	}
 	data := recommendation.Core{
@@ -104,7 +110,7 @@ func (handler *recommendationController) Createrecommendation(c echo.Context) er
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create data", CoreToResponse(resp)))
 }
 
-func (handler *recommendationController) Updaterecommendation(c echo.Context) error {
+func (handler *recommendationController) UpdateRecommendation(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
 	if tokenData.Role != "admin" {
@@ -118,6 +124,12 @@ func (handler *recommendationController) Updaterecommendation(c echo.Context) er
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, map[string]any{
 			"message": "error bind data",
+		})
+	}
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
 		})
 	}
 	data := recommendation.Core{
@@ -134,7 +146,7 @@ func (handler *recommendationController) Updaterecommendation(c echo.Context) er
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
 }
 
-func (handler *recommendationController) Deleterecommendation(c echo.Context) error {
+func (handler *recommendationController) DeleteRecommendation(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
 	if tokenData.Role != "admin" {

@@ -6,14 +6,14 @@ import (
 )
 
 type UserRegisterRequest struct {
-	Name     string `json:"name" form:"name"`
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
+	Name     string `json:"name" form:"name" validate:"required"`
+	Email    string `json:"email" form:"email" validate:"required,email"`
+	Password string `json:"password" form:"password" validate:"required"`
 }
 
 type UserLoginRequest struct {
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
+	Email    string `json:"email" form:"email" validate:"required,email"`
+	Password string `json:"password" form:"password" validate:"required"`
 }
 
 type UserResponse struct {

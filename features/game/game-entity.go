@@ -6,20 +6,21 @@ import (
 )
 
 type Core struct {
-	Id          string
-	Name        string
-	Description string
-	Price       float32
-	Stock       int
-	Discount    float32
-	Genres      []genre.Core
-	Publisher   string
-	ImageUrl    string
-	Platform    string
-	CanComment  bool
-	ReleaseDate time.Time
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Id                string
+	Name              string
+	Description       string
+	Price             float32
+	Stock             int
+	Discount          float32
+	Genres            []genre.Core
+	Publisher         string
+	ImageUrl          string
+	Platform          string
+	CanComment        bool
+	ReleaseDate       time.Time
+	ReleaseDateString string
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
 }
 
 type GameParams struct {

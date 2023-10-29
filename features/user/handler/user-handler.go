@@ -6,7 +6,6 @@ import (
 	"mini_project/features/user"
 	"mini_project/utils/helpers"
 	"net/http"
-	"strings"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
@@ -51,6 +50,12 @@ func (handler *userController) CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"+errBind.Error()))
 	}
 
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
+	}
 	data := user.Core{
 		Name:     input.Name,
 		Email:    input.Email,
@@ -60,10 +65,7 @@ func (handler *userController) CreateUser(c echo.Context) error {
 
 	err := handler.userUseCase.Register(data)
 	if err != nil {
-		if strings.Contains(err.Error(), "required") {
-			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
-
-		} else if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse("the email has already been taken"))
 		}
 
@@ -77,6 +79,13 @@ func (handler *userController) UserLogin(c echo.Context) error {
 	errBind := c.Bind(&input)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"+errBind.Error()))
+	}
+
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
 	}
 
 	data := user.Core{

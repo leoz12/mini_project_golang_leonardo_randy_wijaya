@@ -55,6 +55,12 @@ func (handler *wishlistController) CreateWishlist(c echo.Context) error {
 			"message": errBind,
 		})
 	}
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
+	}
 
 	data := wishlist.Core{
 		UserId: tokenData.Id,
@@ -63,9 +69,6 @@ func (handler *wishlistController) CreateWishlist(c echo.Context) error {
 	resp, err := handler.wishlistUsecase.Insert(data)
 
 	if err != nil {
-		// if strings.Contains(err.Error(), "required") {
-		// 	return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
-		// }
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create genre", GetWishlistReponse(resp)))

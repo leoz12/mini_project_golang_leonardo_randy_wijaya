@@ -7,7 +7,6 @@ import (
 	"mini_project/utils/helpers"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -81,14 +80,12 @@ func (handler *gameController) CreateGame(c echo.Context) error {
 			"message": errBind,
 		})
 	}
-	// Define the format layout that matches the input date string
-	layout := "02-01-2006"
-
-	parsedTime, errTime := time.Parse(layout, input.ReleaseDate)
-	if errTime != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(errTime.Error()))
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
 	}
-
 	var genresCore []genre.Core
 	for _, val := range input.Genres {
 		genresCore = append(genresCore, genre.Core{
@@ -97,21 +94,21 @@ func (handler *gameController) CreateGame(c echo.Context) error {
 	}
 
 	data := game.Core{
-		Name:        input.Name,
-		Description: input.Description,
-		Price:       input.Price,
-		Stock:       input.Stock,
-		Discount:    input.Discount,
-		Genres:      genresCore,
-		Publisher:   input.Publisher,
-		ImageUrl:    input.ImageUrl,
-		Platform:    input.Platform,
-		ReleaseDate: parsedTime,
+		Name:              input.Name,
+		Description:       input.Description,
+		Price:             input.Price,
+		Stock:             input.Stock,
+		Discount:          input.Discount,
+		Genres:            genresCore,
+		Publisher:         input.Publisher,
+		ImageUrl:          input.ImageUrl,
+		Platform:          input.Platform,
+		ReleaseDateString: input.ReleaseDate,
 	}
 	resp, err := handler.gameUsecase.Insert(data)
 
 	if err != nil {
-		if strings.Contains(err.Error(), "required") {
+		if strings.Contains(err.Error(), "invalid") {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
@@ -136,13 +133,13 @@ func (handler *gameController) UpdateGame(c echo.Context) error {
 		})
 	}
 
-	// Define the format layout that matches the input date string
-	layout := "02-01-2006"
-
-	parsedTime, errTime := time.Parse(layout, input.ReleaseDate)
-	if errTime != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(errTime.Error()))
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
 	}
+
 	var genresCore []genre.Core
 
 	for _, val := range input.Genres {
@@ -151,16 +148,16 @@ func (handler *gameController) UpdateGame(c echo.Context) error {
 		})
 	}
 	data := game.Core{
-		Name:        input.Name,
-		Description: input.Description,
-		Price:       input.Price,
-		Stock:       input.Stock,
-		Discount:    input.Discount,
-		Genres:      genresCore,
-		Publisher:   input.Publisher,
-		ReleaseDate: parsedTime,
-		ImageUrl:    input.ImageUrl,
-		Platform:    input.Platform,
+		Name:              input.Name,
+		Description:       input.Description,
+		Price:             input.Price,
+		Stock:             input.Stock,
+		Discount:          input.Discount,
+		Genres:            genresCore,
+		Publisher:         input.Publisher,
+		ReleaseDateString: input.ReleaseDate,
+		ImageUrl:          input.ImageUrl,
+		Platform:          input.Platform,
 	}
 	err := handler.gameUsecase.Update(id, data)
 

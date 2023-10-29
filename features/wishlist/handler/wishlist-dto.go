@@ -7,7 +7,7 @@ import (
 )
 
 type CreateRequest struct {
-	GameId string `json:"gameId" form:"gameId"`
+	GameId string `json:"gameId" form:"gameId" validate:"required"`
 }
 
 type WishlistResponse struct {

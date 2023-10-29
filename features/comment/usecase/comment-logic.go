@@ -29,9 +29,6 @@ func (uc *commentUsecase) GetById(id string) (comment.Core, error) {
 
 // Insert implements comment.UseCaseInterface.
 func (uc *commentUsecase) Insert(role string, data comment.Core) (comment.Core, error) {
-	if data.Comment == "" {
-		return comment.Core{}, errors.New("comment is required")
-	}
 	response, err := uc.commentRepository.Insert(role, data)
 
 	return response, err
@@ -39,9 +36,6 @@ func (uc *commentUsecase) Insert(role string, data comment.Core) (comment.Core, 
 
 // Update implements comment.UseCaseInterface.
 func (uc *commentUsecase) Update(role string, data comment.Core) error {
-	if data.Comment == "" {
-		return errors.New("comment is required")
-	}
 	err := uc.commentRepository.Update(role, data)
 
 	return err
