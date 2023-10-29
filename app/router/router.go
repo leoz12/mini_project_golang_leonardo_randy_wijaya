@@ -113,12 +113,12 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	comments.DELETE("/:id", commentController.DeleteComment)
 
 	recommendations := e.Group("/recommendations", middlewares.JWTMiddleware())
-	recommendations.GET("/game/:id", recommendationController.Getrecommendation)
-	recommendations.GET("", recommendationController.GetAllrecommendations)
-	recommendations.GET("/:id", recommendationController.GetrecommendationById)
-	recommendations.POST("", recommendationController.Createrecommendation)
-	recommendations.PUT("/:id", recommendationController.Updaterecommendation)
-	recommendations.DELETE("/:id", recommendationController.Deleterecommendation)
+	recommendations.GET("/game/:id", recommendationController.GetRecommendation)
+	recommendations.GET("", recommendationController.GetAllRecommendations)
+	recommendations.GET("/:id", recommendationController.GetRecommendationById)
+	recommendations.POST("", recommendationController.CreateRecommendation)
+	recommendations.PUT("/:id", recommendationController.UpdateRecommendation)
+	recommendations.DELETE("/:id", recommendationController.DeleteRecommendation)
 
 	e.POST("upload-image", handler.UploadImageController)
 }

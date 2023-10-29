@@ -74,15 +74,18 @@ func (handler *genreController) CreateGenre(c echo.Context) error {
 			"message": "error bind data",
 		})
 	}
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
+	}
 	data := genre.Core{
 		Name: input.Name,
 	}
 	resp, err := handler.genreUsecase.Insert(data)
 
 	if err != nil {
-		if strings.Contains(err.Error(), "required") {
-			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
-		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create data", GenreResponse{
@@ -109,15 +112,18 @@ func (handler *genreController) UpdateGenre(c echo.Context) error {
 			"message": "error bind data",
 		})
 	}
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
+	}
 	data := genre.Core{
 		Name: input.Name,
 	}
 	err := handler.genreUsecase.Update(id, data)
 
 	if err != nil {
-		if strings.Contains(err.Error(), "required") || strings.Contains(err.Error(), "invalid") {
-			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
-		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))

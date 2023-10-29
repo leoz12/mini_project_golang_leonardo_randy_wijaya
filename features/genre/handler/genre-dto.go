@@ -6,11 +6,11 @@ import (
 )
 
 type CreateRequest struct {
-	Name string `json:"name" form:"name"`
+	Name string `json:"name" form:"name" validate:"required"`
 }
 
 type UpdateRequest struct {
-	Name string `json:"name" form:"name"`
+	Name string `json:"name" form:"name" validate:"required"`
 }
 
 type GenreResponse struct {

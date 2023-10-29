@@ -6,29 +6,29 @@ import (
 )
 
 type CreateRequest struct {
-	Name        string   `json:"name" form:"name"`
-	Description string   `json:"description" form:"description"`
-	Price       float32  `json:"price" form:"price"`
-	Stock       int      `json:"stock" form:"stock"`
-	Discount    float32  `json:"discount" form:"discount"`
-	Genres      []string `json:"genres" form:"genres"`
-	Publisher   string   `json:"publisher" form:"publisher"`
-	ReleaseDate string   `json:"releaseDate" form:"releaseDate"`
+	Name        string   `json:"name" form:"name" validate:"required"`
+	Description string   `json:"description" form:"description" validate:"required"`
+	Price       float32  `json:"price" form:"price" validate:"required,numeric"`
+	Stock       int      `json:"stock" form:"stock" validate:"required,numeric"`
+	Discount    float32  `json:"discount" form:"discount" validate:"required,numeric,min=0,max=100"`
+	Genres      []string `json:"genres" form:"genres" validate:"required,dive,required"`
+	Publisher   string   `json:"publisher" form:"publisher" validate:"required"`
+	ReleaseDate string   `json:"releaseDate" form:"releaseDate" validate:"required"`
 	ImageUrl    string   `json:"ImageUrl" form:"ImageUrl"`
-	Platform    string   `json:"Platform" form:"Platform"`
+	Platform    string   `json:"Platform" form:"Platform" validate:"required"`
 }
 
 type UpdateRequest struct {
-	Name        string    `json:"name" form:"name"`
-	Description string    `json:"description" form:"description"`
-	Price       float32   `json:"price" form:"price"`
-	Stock       int       `json:"stock" form:"stock"`
-	Discount    float32   `json:"discount" form:"discount"`
-	Genres      []string  `json:"genres" form:"genres"`
-	Publisher   string    `json:"publisher" form:"publisher"`
-	ReleaseDate time.Time `json:"releaseDate" form:"releaseDate"`
-	ImageUrl    string    `json:"ImageUrl" form:"ImageUrl"`
-	Platform    string    `json:"Platform" form:"Platform"`
+	Name        string   `json:"name" form:"name" validate:"required"`
+	Description string   `json:"description" form:"description" validate:"required"`
+	Price       float32  `json:"price" form:"price" validate:"required,numeric"`
+	Stock       int      `json:"stock" form:"stock" validate:"required,numeric"`
+	Discount    float32  `json:"discount" form:"discount" validate:"required,numeric,min=0,max=100"`
+	Genres      []string `json:"genres" form:"genres" validate:"required,dive,required"`
+	Publisher   string   `json:"publisher" form:"publisher" validate:"required"`
+	ReleaseDate string   `json:"releaseDate" form:"releaseDate" validate:"required"`
+	ImageUrl    string   `json:"ImageUrl" form:"ImageUrl"`
+	Platform    string   `json:"Platform" form:"Platform" validate:"required"`
 }
 
 type GameGenre struct {

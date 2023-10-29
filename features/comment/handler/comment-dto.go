@@ -6,12 +6,12 @@ import (
 )
 
 type CreateRequest struct {
-	GameId  string `json:"gameId" form:"gameId"`
-	Comment string `json:"comment" form:"comment"`
+	GameId  string `json:"gameId" form:"gameId" validate:"required"`
+	Comment string `json:"comment" form:"comment" validate:"required"`
 }
 
 type UpdateRequest struct {
-	Comment string `json:"comment" form:"comment"`
+	Comment string `json:"comment" form:"comment" validate:"required"`
 }
 
 type CommentUser struct {

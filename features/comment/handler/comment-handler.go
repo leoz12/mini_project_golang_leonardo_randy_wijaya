@@ -75,7 +75,12 @@ func (handler *commentController) CreateComment(c echo.Context) error {
 			"message": errBind,
 		})
 	}
-
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
+	}
 	data := comment.Core{
 		UserId:  tokenData.Id,
 		Comment: input.Comment,
@@ -106,6 +111,12 @@ func (handler *commentController) UpdateComment(c echo.Context) error {
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, map[string]any{
 			"message": errBind,
+		})
+	}
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
 		})
 	}
 	data := comment.Core{

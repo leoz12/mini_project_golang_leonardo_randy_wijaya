@@ -20,12 +20,12 @@ func (repo *gameRepository) SelectAll(params game.GameParams) ([]game.Core, erro
 	var games []Game
 	var tx *gorm.DB
 	if len(strings.Split(params.Genres, ",")) > 0 && params.Genres != "" {
-		tx = repo.db.Preload("Genres").Joins("JOIN game_genres gg ON gg.game_id = games.id").
-			Joins("JOIN genres g ON g.id = gg.genre_id").
+		tx = repo.db.Preload("Genres").Joins("LEFT JOIN game_genres gg ON gg.game_id = games.id").
+			Joins("LEFT JOIN genres g ON g.id = gg.genre_id").
 			Where("games.name LIKE ? AND g.name IN (?)", "%"+params.Search+"%", strings.Split(params.Genres, ",")).Group("id").Find(&games)
 	} else {
-		tx = repo.db.Preload("Genres").Joins("JOIN game_genres gg ON gg.game_id = games.id").
-			Joins("JOIN genres g ON g.id = gg.genre_id").
+		tx = repo.db.Preload("Genres").Joins("LEFT JOIN game_genres gg ON gg.game_id = games.id").
+			Joins("LEFT JOIN genres g ON g.id = gg.genre_id").
 			Where("games.name LIKE ?", "%"+params.Search+"%").Group("id").Find(&games)
 	}
 
@@ -200,11 +200,8 @@ func (repo *gameRepository) Update(id string, data game.Core) error {
 
 // Delete implements game.DataInterface.
 func (repo *gameRepository) Delete(id string) error {
-	tx := repo.db.Unscoped().Where("id = ?", id).Delete(&Game{})
+	tx := repo.db.Where("id = ?", id).Delete(&Game{})
 
-	if tx.RowsAffected == 0 {
-		return errors.New("invalid id")
-	}
 	if tx.Error != nil {
 		return tx.Error
 	}

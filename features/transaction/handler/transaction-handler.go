@@ -78,7 +78,12 @@ func (handler *transactionController) CreateTransaction(c echo.Context) error {
 			"message": errBind,
 		})
 	}
-
+	errValidations := helpers.ReqeustValidator(input)
+	if len(errValidations) > 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errValidations,
+		})
+	}
 	data := transaction.Core{
 		UserId:   tokenData.Id,
 		GameId:   input.GameId,
