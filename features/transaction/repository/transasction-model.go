@@ -10,7 +10,7 @@ import (
 type Transaction struct {
 	ID              string              `gorm:"primarykey"`
 	UserId          string              `gorm:"size:191"`
-	User            userRepository.User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User            userRepository.User `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	GameId          string
 	GameName        string
 	GameDescription string
