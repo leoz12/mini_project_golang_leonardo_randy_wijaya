@@ -12,6 +12,5 @@ COPY . .
 
 RUN go build -o main.app .
 
-EXPOSE 8000
 
 CMD ["/app/main.app"]
