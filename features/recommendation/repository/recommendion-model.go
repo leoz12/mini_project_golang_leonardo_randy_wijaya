@@ -1,4 +1,4 @@
-package repository
+package recommendationRepository
 
 import (
 	"time"
@@ -6,12 +6,10 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Recommendation struct {
 	ID        string `gorm:"primarykey"`
+	Name      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string
-	Email     string `gorm:"unique"`
-	Password  string
 }

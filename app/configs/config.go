@@ -17,6 +17,12 @@ type AppConfig struct {
 	DBNAME     string
 }
 
+var (
+	SECRET_JWT     = ""
+	OPEN_AI_KEY    = ""
+	CLOUDINARY_URL = ""
+)
+
 func InitConfig() *AppConfig {
 	var res = new(AppConfig)
 	res = loadConfig()
@@ -36,7 +42,6 @@ func loadConfig() *AppConfig {
 
 	if err != nil {
 		logrus.Error("Config : Cannot load config file,", err.Error())
-		return nil
 	}
 
 	if val, found := os.LookupEnv("SERVERPORT"); found {
@@ -55,6 +60,18 @@ func loadConfig() *AppConfig {
 			return nil
 		}
 		res.DBPORT = port
+	}
+
+	if val, found := os.LookupEnv("SECRETJWT"); found {
+		SECRET_JWT = val
+	}
+
+	if val, found := os.LookupEnv("OPEN_AI_KEY"); found {
+		OPEN_AI_KEY = val
+	}
+
+	if val, found := os.LookupEnv("CLOUDINARY_URL"); found {
+		CLOUDINARY_URL = val
 	}
 
 	if val, found := os.LookupEnv("DBHOST"); found {

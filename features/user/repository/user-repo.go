@@ -1,4 +1,4 @@
-package repository
+package userRepository
 
 import (
 	"mini_project/features/user"
@@ -11,9 +11,28 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-// Insert implements user.DataInterface.
-func (repo *userRepository) Insert(data user.UserCore) error {
-	//mapping dari struct core ke struct gorm/model
+func (repo *userRepository) SelectAll() ([]user.Core, error) {
+	var users []User
+	var usersCore []user.Core
+	tx := repo.db.Find(&users)
+
+	if tx.Error != nil {
+		return usersCore, tx.Error
+	}
+	for _, val := range users {
+		usersCore = append(usersCore, user.Core{
+			Id:        val.ID,
+			Name:      val.Name,
+			Email:     val.Email,
+			CreatedAt: val.CreatedAt,
+			UpdatedAt: val.UpdatedAt,
+		})
+	}
+	return usersCore, nil
+
+}
+
+func (repo *userRepository) Insert(data user.Core) error {
 	var input = User{
 		ID:       uuid.New().String(),
 		Name:     data.Name,
@@ -27,16 +46,17 @@ func (repo *userRepository) Insert(data user.UserCore) error {
 	return nil
 }
 
-func (repo *userRepository) CheckByEmail(email string) (*user.UserCore, error) {
+func (repo *userRepository) CheckByEmail(email string) (user.Core, error) {
 	var data User
 
 	tx := repo.db.Where("email = ?", email).First(&data)
 
 	if tx.Error != nil {
-		return &user.UserCore{}, tx.Error
+		return user.Core{}, tx.Error
 	}
-	return &user.UserCore{
-		ID:        data.ID,
+
+	return user.Core{
+		Id:        data.ID,
 		Name:      data.Name,
 		Password:  data.Password,
 		CreatedAt: data.CreatedAt,
@@ -44,7 +64,7 @@ func (repo *userRepository) CheckByEmail(email string) (*user.UserCore, error) {
 	}, nil
 }
 
-func UserDB(db *gorm.DB) user.DataInterface {
+func New(db *gorm.DB) user.DataInterface {
 	return &userRepository{
 		db: db,
 	}
