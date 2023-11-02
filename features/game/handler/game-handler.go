@@ -1,6 +1,7 @@
 package gameHandler
 
 import (
+	"mini_project/app/configs"
 	"mini_project/app/middlewares"
 	"mini_project/features/game"
 	"mini_project/features/genre"
@@ -69,7 +70,7 @@ func (handler *gameController) GetGameById(c echo.Context) error {
 func (handler *gameController) CreateGame(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -119,7 +120,7 @@ func (handler *gameController) CreateGame(c echo.Context) error {
 func (handler *gameController) UpdateGame(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -173,7 +174,7 @@ func (handler *gameController) UpdateGame(c echo.Context) error {
 func (handler *gameController) DeleteGame(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 	id := c.Param("id")

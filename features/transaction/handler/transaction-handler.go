@@ -1,6 +1,7 @@
 package transactionHandler
 
 import (
+	"mini_project/app/configs"
 	"mini_project/app/middlewares"
 	"mini_project/features/transaction"
 	"mini_project/utils/helpers"
@@ -51,7 +52,7 @@ func (handler *transactionController) GetTransactionById(c echo.Context) error {
 	id := c.Param("id")
 	resp, err := handler.transactionUsecase.GetById(id)
 
-	if resp.UserId != tokenData.Id && tokenData.Role == "user" {
+	if resp.UserId != tokenData.Id && tokenData.Role == configs.UserRole.User {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -67,7 +68,7 @@ func (handler *transactionController) GetTransactionById(c echo.Context) error {
 func (handler *transactionController) CreateTransaction(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "user" {
+	if tokenData.Role != configs.UserRole.User {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 

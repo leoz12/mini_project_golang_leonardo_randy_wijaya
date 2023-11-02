@@ -1,6 +1,7 @@
 package wishlistHandler
 
 import (
+	"mini_project/app/configs"
 	"mini_project/app/middlewares"
 	"mini_project/features/wishlist"
 	"mini_project/utils/helpers"
@@ -44,7 +45,7 @@ func (handler *wishlistController) GetWishlists(c echo.Context) error {
 func (handler *wishlistController) CreateWishlist(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "user" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -66,18 +67,18 @@ func (handler *wishlistController) CreateWishlist(c echo.Context) error {
 		UserId: tokenData.Id,
 		GameId: input.GameId,
 	}
-	resp, err := handler.wishlistUsecase.Insert(data)
+	_, err := handler.wishlistUsecase.Insert(data)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success create genre", GetWishlistReponse(resp)))
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("success create wishlist"))
 }
 
 func (handler *wishlistController) DeleteWishlist(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "user" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 	id := c.Param("id")

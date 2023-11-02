@@ -1,6 +1,7 @@
 package recommendationHandler
 
 import (
+	"mini_project/app/configs"
 	"mini_project/app/middlewares"
 	"mini_project/features/recommendation"
 	"mini_project/utils/helpers"
@@ -79,7 +80,7 @@ func (handler *recommendationController) GetRecommendationById(c echo.Context) e
 func (handler *recommendationController) CreateRecommendation(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -113,7 +114,7 @@ func (handler *recommendationController) CreateRecommendation(c echo.Context) er
 func (handler *recommendationController) UpdateRecommendation(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -149,7 +150,7 @@ func (handler *recommendationController) UpdateRecommendation(c echo.Context) er
 func (handler *recommendationController) DeleteRecommendation(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 

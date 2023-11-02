@@ -23,6 +23,16 @@ var (
 	CLOUDINARY_URL = ""
 )
 
+type userRole struct {
+	Admin string
+	User  string
+}
+
+var UserRole = userRole{
+	Admin: "admin",
+	User:  "user",
+}
+
 func InitConfig() *AppConfig {
 	var res = new(AppConfig)
 	res = loadConfig()
