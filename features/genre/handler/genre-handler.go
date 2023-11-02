@@ -1,6 +1,7 @@
 package genreHandler
 
 import (
+	"mini_project/app/configs"
 	"mini_project/app/middlewares"
 	"mini_project/features/genre"
 	"mini_project/utils/helpers"
@@ -63,7 +64,7 @@ func (handler *genreController) GetGenreById(c echo.Context) error {
 func (handler *genreController) CreateGenre(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -99,7 +100,7 @@ func (handler *genreController) CreateGenre(c echo.Context) error {
 func (handler *genreController) UpdateGenre(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 
@@ -132,7 +133,7 @@ func (handler *genreController) UpdateGenre(c echo.Context) error {
 func (handler *genreController) DeleteGenre(c echo.Context) error {
 	tokenData := middlewares.ExtractToken(c)
 
-	if tokenData.Role != "admin" {
+	if tokenData.Role != configs.UserRole.Admin {
 		return c.JSON(http.StatusUnauthorized, helpers.FailedResponse("unauthorized"))
 	}
 

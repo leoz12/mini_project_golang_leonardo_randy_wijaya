@@ -2,6 +2,7 @@ package userUsecase
 
 import (
 	"errors"
+	"mini_project/app/configs"
 	"mini_project/app/middlewares"
 	"mini_project/features/user"
 	"mini_project/utils/helpers"
@@ -47,7 +48,7 @@ func (uc *userUseCase) Login(data user.Core) (string, error) {
 	}
 
 	if helpers.CheckPasswordHash(dataUser.Password, data.Password) {
-		token, errToken := middlewares.CreateToken(dataUser.Id, "user")
+		token, errToken := middlewares.CreateToken(dataUser.Id, configs.UserRole.User)
 
 		if errToken != nil {
 			return "", errToken

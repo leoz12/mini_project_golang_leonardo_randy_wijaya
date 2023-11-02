@@ -2,6 +2,7 @@ package transactionRepository
 
 import (
 	"errors"
+	"mini_project/app/configs"
 	gameRepository "mini_project/features/game/repository"
 	"mini_project/features/transaction"
 
@@ -19,7 +20,7 @@ func (repo *transactionRepository) SelectAll(userId string, role string) ([]tran
 
 	var tx *gorm.DB
 
-	if role == "user" {
+	if role == configs.UserRole.User {
 		tx = repo.db.Where("user_id = ?", userId).Preload("User").Find(&transactions)
 	} else {
 		tx = repo.db.Preload("User").Find(&transactions)
