@@ -105,20 +105,21 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	transactions.GET("/:id", transactionController.GetTransactionById)
 	transactions.POST("", transactionController.CreateTransaction)
 
-	comments := e.Group("/comments", middlewares.JWTMiddleware())
-	comments.GET("/game/:gameId", commentController.GetAllComment)
-	comments.GET("/:id", commentController.GetCommentById)
-	comments.POST("", commentController.CreateComment)
-	comments.PUT("/:id", commentController.UpdateComment)
-	comments.DELETE("/:id", commentController.DeleteComment)
+	comments := e.Group("/games", middlewares.JWTMiddleware())
+	comments.GET("/:gameId/comments", commentController.GetAllComment)
+	comments.GET("comments/:id", commentController.GetCommentById)
+	comments.POST("/comments", commentController.CreateComment)
+	comments.PUT("/comments/:id", commentController.UpdateComment)
+	comments.DELETE("/comments/:id", commentController.DeleteComment)
 
+	//recomendation option for chatbot created by admin
 	recommendations := e.Group("/recommendations", middlewares.JWTMiddleware())
-	recommendations.GET("/game/:id", recommendationController.GetRecommendation)
 	recommendations.GET("", recommendationController.GetAllRecommendations)
 	recommendations.GET("/:id", recommendationController.GetRecommendationById)
 	recommendations.POST("", recommendationController.CreateRecommendation)
 	recommendations.PUT("/:id", recommendationController.UpdateRecommendation)
 	recommendations.DELETE("/:id", recommendationController.DeleteRecommendation)
+	e.GET("games/recommendations/:id", recommendationController.GetRecommendation, middlewares.JWTMiddleware())
 
 	e.POST("upload-image", handler.UploadImageController, middlewares.JWTMiddleware())
 }

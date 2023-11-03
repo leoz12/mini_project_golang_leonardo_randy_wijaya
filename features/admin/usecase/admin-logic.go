@@ -2,6 +2,7 @@ package adminUsecase
 
 import (
 	"errors"
+	"mini_project/app/configs"
 	"mini_project/app/middlewares"
 	"mini_project/features/admin"
 	"mini_project/utils/helpers"
@@ -40,7 +41,7 @@ func (uc *adminUseCase) Login(data admin.Core) (string, error) {
 	}
 
 	if helpers.CheckPasswordHash(dataUser.Password, data.Password) {
-		token, errToken := middlewares.CreateToken(dataUser.Id, "admin")
+		token, errToken := middlewares.CreateToken(dataUser.Id, configs.UserRole.Admin)
 
 		if errToken != nil {
 			return "", errToken
