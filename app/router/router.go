@@ -112,14 +112,14 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	comments.PUT("/comments/:id", commentController.UpdateComment)
 	comments.DELETE("/comments/:id", commentController.DeleteComment)
 
-	//recomendation option for chatbot
+	//recomendation option for chatbot created by admin
 	recommendations := e.Group("/recommendations", middlewares.JWTMiddleware())
 	recommendations.GET("", recommendationController.GetAllRecommendations)
 	recommendations.GET("/:id", recommendationController.GetRecommendationById)
 	recommendations.POST("", recommendationController.CreateRecommendation)
 	recommendations.PUT("/:id", recommendationController.UpdateRecommendation)
 	recommendations.DELETE("/:id", recommendationController.DeleteRecommendation)
-	e.GET("recommendation-game/:id", recommendationController.GetRecommendation, middlewares.JWTMiddleware())
+	e.GET("games/recommendation/:id", recommendationController.GetRecommendation, middlewares.JWTMiddleware())
 
 	e.POST("upload-image", handler.UploadImageController, middlewares.JWTMiddleware())
 }
