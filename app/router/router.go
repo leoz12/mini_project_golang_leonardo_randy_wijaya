@@ -119,7 +119,7 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	recommendations.POST("", recommendationController.CreateRecommendation)
 	recommendations.PUT("/:id", recommendationController.UpdateRecommendation)
 	recommendations.DELETE("/:id", recommendationController.DeleteRecommendation)
-	e.GET("games/recommendation/:id", recommendationController.GetRecommendation, middlewares.JWTMiddleware())
+	e.GET("games/recommendations/:id", recommendationController.GetRecommendation, middlewares.JWTMiddleware())
 
 	e.POST("upload-image", handler.UploadImageController, middlewares.JWTMiddleware())
 }
